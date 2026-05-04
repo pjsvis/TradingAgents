@@ -11,7 +11,7 @@
 const PORT = process.env.TA_DASHBOARD_PORT ?? "3000";
 const mode = Bun.argv[2] ?? "dev";
 
-const URL =
+const ENDPOINT =
   mode === "test"
     ? `http://localhost:${PORT}/api/portfolio/intelligence?mode=test`
     : `http://localhost:${PORT}/api/portfolio/intelligence`;
@@ -53,11 +53,11 @@ function pct(n: number): string {
 async function main() {
   let data: IntelligenceResponse;
   try {
-    const res = await fetch(URL);
+    const res = await fetch(ENDPOINT);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     data = await res.json();
   } catch (e) {
-    console.error(`Failed to fetch ${URL}: ${e}`);
+    console.error(`Failed to fetch ${ENDPOINT}: ${e}`);
     process.exit(1);
   }
 
