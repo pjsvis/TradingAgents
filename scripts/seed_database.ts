@@ -51,12 +51,22 @@ function getDb(): Database {
 }
 
 function connectDb(path: string): Database {
-  const db = new Database(path);
+  const db = new Database(path, { readwrite: true, create: true });
   db.exec("PRAGMA journal_mode = WAL");
   db.exec("PRAGMA busy_timeout = 5000");
   db.exec("PRAGMA foreign_keys = ON");
   _db = db;
   return db;
+}
+
+function migrateSchema(): void {
+  const db = getDb();
+  const schemaPath = join(process.cwd(), "server", "lib", "schema.sql");
+  if (existsSync(schemaPath)) {
+    const schema = readFileSync(schemaPath, "utf-8");
+    db.exec(schema);
+    console.log("  Schema applied from server/lib/schema.sql");
+  }
 }
 
 // ─── Secret sanitization ─────────────────────────────────────────────────────
@@ -95,33 +105,61 @@ function clearTable(table: string): void {
   if (table === "positions") {
     db.exec("DELETE FROM positions WHERE platform = 'test'");
   } else if (table === "signals") {
-    db.exec("DELETE FROM signals WHERE date BETWEEN '2026-01-01' AND '2026-04-01'");
+    db.exec("DELETE FROM signals");
   } else if (table === "watchlist") {
-    db.exec("DELETE FROM watchlist WHERE platform = 'test'");
+    db.exec("DELETE FROM watchlist");
   } else if (table === "analyses") {
-    db.exec("DELETE FROM analyses WHERE date BETWEEN '2026-01-01' AND '2026-04-01'");
+    db.exec("DELETE FROM analyses");
   }
   console.log(`  Cleared ${table}`);
 }
 
 // ── Seed functions ──────────────────────────────────────────────────────────
 
+function seedAccounts(): void {
+  const db = getDb();
+  // Delete child records first (foreign key constraint)
+  db.exec("DELETE FROM spreadbet_positions WHERE account_id LIKE 'ig-%' OR account_id = 'aviva' OR account_id = 'ajbell'");
+  db.exec("DELETE FROM positions WHERE account_id LIKE 'ig-%' OR account_id = 'aviva' OR account_id = 'ajbell'");
+  db.exec("DELETE FROM account_balances WHERE account_id LIKE 'ig-%' OR account_id = 'aviva' OR account_id = 'ajbell' OR account_id = 'nsandi' OR account_id = 'cash-other'");
+  db.exec("DELETE FROM accounts WHERE id LIKE 'ig-%' OR id = 'aviva' OR id = 'ajbell' OR id = 'nsandi' OR id = 'cash-other'");
+
+  const accounts = [
+    { id: "ig-isa",       provider: "IG",          account_type: "isa",       name: "IG ISA",              balance: 5000,  currency: "GBP", notes: "Tax-free growth wrapper. Primary accumulation vehicle." },
+    { id: "ig-shares",    provider: "IG",          account_type: "shares",    name: "IG Share Dealing",    balance: 2000,  currency: "GBP", notes: "CGT taxable. Used for positions exceeding ISA allowance." },
+    { id: "ig-spreadbet", provider: "IG",          account_type: "spreadbet", name: "IG Spread Betting",   balance: 10000, currency: "GBP", notes: "Tax-free betting account. Separate allocation (20%)." },
+    { id: "aviva",        provider: "Aviva",       account_type: "sipp",      name: "Aviva Pension",       balance: 25000, currency: "GBP", notes: "Group workplace pension. Access from age 55." },
+    { id: "ajbell",       provider: "AJ Bell",     account_type: "sipp",      name: "AJ Bell SIPP",        balance: 15000, currency: "GBP", notes: "Self-invested personal pension. Drawdown planning." },
+    { id: "nsandi",       provider: "NS&I",        account_type: "savings",   name: "NS&I Premium Bonds",  balance: 15000, currency: "GBP", notes: "UK government savings. Manual balance update monthly." },
+    { id: "cash-other",   provider: "Other",       account_type: "cash",      name: "Cash & Savings",      balance: 8000,  currency: "GBP", notes: "Bank accounts + legacy pots. Emergency fund." },
+  ];
+
+  for (const a of accounts) {
+    db.run(
+      `INSERT OR REPLACE INTO accounts (id, provider, account_type, name, balance, currency, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [a.id, a.provider, a.account_type, a.name, a.balance, a.currency, a.notes],
+    );
+  }
+  console.log(`  Inserted ${accounts.length} accounts`);
+}
+
 function seedPositions(): void {
   clearTable("positions");
 
   const positions = [
-    { ticker: "VWCE.DE", exchange: "XETRA", platform: "test", quantity: 10, avg_cost: 132.00, entry_date: d(-3), thesis: "All-world ETF — low-cost core holding, accumulating", status: "open", notes: "Accumulating quarterly. MSCI World exposure." },
-    { ticker: "AAPL", exchange: "US", platform: "test", quantity: 10, avg_cost: 192.00, entry_date: d(-3), thesis: "Testing signal accuracy — smaller position", status: "open", notes: "Test position — WWDC catalyst watch" },
-    { ticker: "ETH", exchange: "CRYPTO", platform: "test", quantity: 0.5, avg_cost: 2850.00, entry_date: d(-2), thesis: "Crypto exposure test — ETH staking yield 3.8%", status: "open", notes: "Risk-off behaviour expected. Small position." },
-    { ticker: "TSLA", exchange: "US", platform: "test", quantity: 5, avg_cost: 245.00, entry_date: d(-1), thesis: "EV market share pressure; FSD licensing optionality", status: "open", notes: "Recent addition — watch for thesis invalidation" },
+    { ticker: "VWCE.DE", exchange: "XETRA", platform: "test", account_id: "ig-isa",     quantity: 10,  avg_cost: 132.00, entry_date: d(-3), thesis: "All-world ETF — low-cost core holding, accumulating", status: "open", notes: "Accumulating quarterly. MSCI World exposure." },
+    { ticker: "AAPL",    exchange: "US",     platform: "test", account_id: "ig-shares",  quantity: 10,  avg_cost: 192.00, entry_date: d(-3), thesis: "Testing signal accuracy — smaller position", status: "open", notes: "Test position — WWDC catalyst watch" },
+    { ticker: "ETH",     exchange: "CRYPTO", platform: "test", account_id: "ig-spreadbet", quantity: 0.5, avg_cost: 2850.00, entry_date: d(-2), thesis: "Crypto exposure test — ETH staking yield 3.8%", status: "open", notes: "Risk-off behaviour expected. Small position." },
+    { ticker: "TSLA",    exchange: "US",     platform: "test", account_id: "ig-shares",  quantity: 5,   avg_cost: 245.00, entry_date: d(-1), thesis: "EV market share pressure; FSD licensing optionality", status: "open", notes: "Recent addition — watch for thesis invalidation" },
   ];
 
   const db = getDb();
   for (const p of positions) {
     db.run(
-      `INSERT INTO positions (ticker, exchange, platform, quantity, avg_cost, entry_date, thesis, status, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [p.ticker, p.exchange, p.platform, p.quantity, p.avg_cost, p.entry_date, sanitize(p.thesis), p.status, sanitize(p.notes)],
+      `INSERT INTO positions (ticker, exchange, platform, account_id, quantity, avg_cost, entry_date, thesis, status, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [p.ticker, p.exchange, p.platform, p.account_id, p.quantity, p.avg_cost, p.entry_date, sanitize(p.thesis), p.status, sanitize(p.notes)],
     );
   }
   db.exec("DELETE FROM positions WHERE platform = 'degiero' OR platform = 'ibkr'");
@@ -326,16 +364,58 @@ ${sanitize(pm.lesson) ?? pm.lesson}
   console.log(`  Wrote ${postMortems.length} post-mortems`);
 }
 
+function seedSpreadBetPositions(): void {
+  const db = getDb();
+  db.exec("DELETE FROM spreadbet_positions WHERE account_id = 'ig-spreadbet'");
+
+  const bets = [
+    { account_id: "ig-spreadbet", ticker: "AAPL", direction: "short", stake_per_point: 2, entry_price: 195.00, entry_date: d(-2), stop_price: 210.00, target_price: 170.00, status: "open", notes: "Short AAPL ahead of earnings risk." },
+    { account_id: "ig-spreadbet", ticker: "BTC",  direction: "long",  stake_per_point: 1, entry_price: 62000,  entry_date: d(-1), stop_price: 55000,  target_price: 75000,  status: "open", notes: "BTC long on ETF inflows thesis." },
+  ];
+
+  for (const b of bets) {
+    db.run(
+      `INSERT INTO spreadbet_positions (account_id, ticker, direction, stake_per_point, entry_price, entry_date, stop_price, target_price, status, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [b.account_id, b.ticker, b.direction, b.stake_per_point, b.entry_price, b.entry_date, b.stop_price, b.target_price, b.status, sanitize(b.notes)],
+    );
+  }
+  console.log(`  Inserted ${bets.length} spread bet positions`);
+}
+
+function seedAccountBalances(): void {
+  const db = getDb();
+  db.exec("DELETE FROM account_balances WHERE account_id IN ('nsandi','cash-other')");
+
+  const balances = [
+    { account_id: "nsandi",     balance: 15000, date: d(0, -30), note: "Monthly balance check" },
+    { account_id: "nsandi",     balance: 14850, date: d(0, -60), note: "Previous month" },
+    { account_id: "cash-other", balance: 8000,  date: d(0, -15), note: "Current cash position" },
+    { account_id: "cash-other", balance: 9000,  date: d(0, -45), note: "Previous cash position" },
+  ];
+
+  for (const b of balances) {
+    db.run(
+      `INSERT INTO account_balances (account_id, balance, date, note) VALUES (?, ?, ?, ?)`,
+      [b.account_id, b.balance, b.date, b.note],
+    );
+  }
+  console.log(`  Inserted ${balances.length} account balance history entries`);
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 interface CliFlags {
   db?: string;
+  accounts?: boolean;
   positions?: boolean;
   signals?: boolean;
   watchlist?: boolean;
   analyses?: boolean;
   "exit-plans"?: boolean;
   "post-mortems"?: boolean;
+  "spread-bets"?: boolean;
+  "account-balances"?: boolean;
   all?: boolean;
 }
 
@@ -346,12 +426,15 @@ function parseArgs(): CliFlags {
   while (i < args.length) {
     const arg = args[i];
     if (arg === "--db") { flags.db = args[++i]; }
+    else if (arg === "--accounts") { flags.accounts = true; }
     else if (arg === "--positions") { flags.positions = true; }
     else if (arg === "--signals") { flags.signals = true; }
     else if (arg === "--watchlist") { flags.watchlist = true; }
     else if (arg === "--analyses") { flags.analyses = true; }
     else if (arg === "--exit-plans") { flags["exit-plans"] = true; }
     else if (arg === "--post-mortems") { flags["post-mortems"] = true; }
+    else if (arg === "--spread-bets") { flags["spread-bets"] = true; }
+    else if (arg === "--account-balances") { flags["account-balances"] = true; }
     else if (arg === "--all") { flags.all = true; }
     else if (!arg.startsWith("-")) { /* positional, ignore */ }
     i++;
@@ -364,21 +447,26 @@ async function main() {
   const dbPath = resolveDbPath(flags.db);
 
   connectDb(dbPath);
+  migrateSchema();
 
   const seedAll =
-    !flags.positions && !flags.signals && !flags.watchlist &&
-    !flags.analyses && !flags["exit-plans"] && !flags["post-mortems"];
+    !flags.accounts && !flags.positions && !flags.signals && !flags.watchlist &&
+    !flags.analyses && !flags["exit-plans"] && !flags["post-mortems"] &&
+    !flags["spread-bets"] && !flags["account-balances"];
 
   const isTest = dbPath.endsWith("test_portfolio.db");
   console.log(`Seeding TradingAgents database${isTest ? " [TEST MODE]" : ""}...`);
   console.log(`  Target DB: ${dbPath}`);
 
+  if (seedAll || flags.accounts) seedAccounts();
   if (seedAll || flags.positions) seedPositions();
   if (seedAll || flags.signals) seedSignals();
   if (seedAll || flags.watchlist) seedWatchlist();
   if (seedAll || flags.analyses) seedAnalyses();
   if (seedAll || flags["exit-plans"]) seedExitPlans();
   if (seedAll || flags["post-mortems"]) seedPostMortems();
+  if (seedAll || flags["spread-bets"]) seedSpreadBetPositions();
+  if (seedAll || flags["account-balances"]) seedAccountBalances();
 
   console.log("Done.");
 }

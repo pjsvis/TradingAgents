@@ -153,7 +153,7 @@ async function batchFetchPricesWithHistory(tickers: string[]): Promise<Map<strin
   if (tickers.length === 0) return results
 
   const root = findProjectRoot()
-  const script = join(root, "scripts", "get_price.py")
+  const script = join(root, "scripts", "py", "get_price.py")
 
   // Fetch in parallel batches of 4 (yfinance is the bottleneck)
   const BATCH_SIZE = 4
