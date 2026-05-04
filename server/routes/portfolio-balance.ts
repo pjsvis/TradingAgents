@@ -21,10 +21,13 @@ portfolioBalanceRouter.post("/", async (c) => {
     const db = DatabaseFactory.get()
     const date = new Date().toISOString().split("T")[0]
 
-    // Upsert account balance
+    // Update existing account balance (preserve non-NULL columns)
+    const existing = db.query("SELECT * FROM accounts WHERE id = ?").get(account_id)
+    if (!existing) return c.json({ error: "Account not found", account_id }, 404)
+
     db.run(
-      "INSERT INTO accounts (id, balance, updated_at) VALUES (?, ?, datetime('now'))",
-      [account_id, balance],
+      "UPDATE accounts SET balance = ?, updated_at = datetime('now') WHERE id = ?",
+      [balance, account_id],
     )
 
     // Record balance history
