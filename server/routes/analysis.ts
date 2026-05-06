@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process"
 import { existsSync } from "node:fs"
 import { dirname, join } from "node:path"
+import { createInterface } from "node:readline"
 import { Hono } from "hono"
 import { streamSSE } from "hono/streaming"
 import { DatabaseFactory } from "../lib/db.ts"
@@ -116,48 +117,41 @@ analysisRouter.post("/", async (c) => {
 
     let stderr = ""
     const MAX_STDERR = 8192
-    let buf = ""
 
-    child.stdout.on("data", (chunk: Buffer) => {
-      buf += chunk.toString()
-      const idx = buf.lastIndexOf("\n")
-      if (idx === -1) return
-      const complete = buf.slice(0, idx)
-      buf = buf.slice(idx + 1)
+    const rl = createInterface({ input: child.stdout })
 
-      for (const line of complete.split("\n").filter(Boolean)) {
-        try {
-          const parsed = JSON.parse(line)
-          if (parsed.event && parsed.data !== undefined) {
-            // Collect for post-stream persistence
-            events.push({ event: parsed.event, data: parsed.data })
+    rl.on("line", (line) => {
+      try {
+        const parsed = JSON.parse(line)
+        if (parsed.event && parsed.data !== undefined) {
+          // Collect for post-stream persistence
+          events.push({ event: parsed.event, data: parsed.data })
 
-            // Auto-save decision as a signal in the DB
-            if (parsed.event === "decision") {
-              const d = parsed.data as Record<string, unknown>
-              try {
-                const db = DatabaseFactory.get()
-                db.prepare(
-                  "INSERT INTO signals (ticker, date, signal, reasoning, confidence) VALUES (?, ?, ?, ?, ?)",
-                ).run(
-                  ticker,
-                  dateStr,
-                  (d.signal as string) ?? "hold",
-                  sanitizeForDb(d.reasoning as string) ?? null,
-                  (d.confidence as string) ?? null,
-                )
-              } catch {
-                /* DB write failure shouldn't break the stream */
-              }
+          // Auto-save decision as a signal in the DB
+          if (parsed.event === "decision") {
+            const d = parsed.data as Record<string, unknown>
+            try {
+              const db = DatabaseFactory.get()
+              db.prepare(
+                "INSERT INTO signals (ticker, date, signal, reasoning, confidence) VALUES (?, ?, ?, ?, ?)",
+              ).run(
+                ticker,
+                dateStr,
+                (d.signal as string) ?? "hold",
+                sanitizeForDb(d.reasoning as string) ?? null,
+                (d.confidence as string) ?? null,
+              )
+            } catch {
+              /* DB write failure shouldn't break the stream */
             }
-
-            stream
-              .writeSSE({ event: parsed.event, data: JSON.stringify(parsed.data) })
-              .catch(() => {})
           }
-        } catch {
-          // Skip non-JSON output (warnings, etc.)
+
+          stream
+            .writeSSE({ event: parsed.event, data: JSON.stringify(parsed.data) })
+            .catch(() => {})
         }
+      } catch {
+        // Skip non-JSON output (warnings, etc.)
       }
     })
 
@@ -168,13 +162,22 @@ analysisRouter.post("/", async (c) => {
     })
 
     const abortController = new AbortController()
+
+    let sigkillTimeout: ReturnType<typeof setTimeout> | undefined
     const abortHandler = () => {
       child.kill("SIGTERM")
+      sigkillTimeout = setTimeout(() => child.kill("SIGKILL"), 5000)
       abortController.abort()
     }
 
     if (stream.onAbort) stream.onAbort(abortHandler)
     c.req.raw.signal.addEventListener("abort", abortHandler, { once: true })
+
+    function cleanup() {
+      rl.close()
+      c.req.raw.signal.removeEventListener("abort", abortHandler)
+      if (sigkillTimeout) clearTimeout(sigkillTimeout)
+    }
 
     // ── Persist full analysis state to DB ──────────────────────────────
     function persistState() {
@@ -200,18 +203,7 @@ analysisRouter.post("/", async (c) => {
 
     await new Promise<void>((resolve) => {
       child.on("close", (code) => {
-        // Flush remaining buffer
-        const remaining = buf.trim()
-        if (remaining) {
-          try {
-            const parsed = JSON.parse(remaining)
-            if (parsed.event && parsed.data !== undefined) {
-              events.push({ event: parsed.event, data: parsed.data })
-            }
-          } catch {
-            // Not valid JSON
-          }
-        }
+        cleanup()
 
         persistState()
 
@@ -231,6 +223,7 @@ analysisRouter.post("/", async (c) => {
       })
 
       child.on("error", (err) => {
+        cleanup()
         persistState()
         stream
           .writeSSE({ event: "error", data: JSON.stringify({ message: err.message }) })
@@ -238,7 +231,10 @@ analysisRouter.post("/", async (c) => {
         resolve()
       })
 
-      abortController.signal.addEventListener("abort", () => resolve(), { once: true })
+      abortController.signal.addEventListener("abort", () => {
+        cleanup()
+        resolve()
+      }, { once: true })
     })
   })
 })
