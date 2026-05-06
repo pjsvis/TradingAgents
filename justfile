@@ -62,11 +62,25 @@ m:  # Meta — project info, help, state
     @just --list --group meta
 
 [group("nav")]
-c:  # Convenience — common one-liners
+r:  # Run — business operations (analyze, portfolio, sync, seed)
     @echo ""
-    @echo "=== Convenience: common one-liners ==="
+    @echo "=== Run: business operations ==="
     @echo ""
-    @just --list --group convenience
+    @just --list --group run
+
+[group("nav")]
+s:  # Seed — database seeding and partial resets
+    @echo ""
+    @echo "=== Seed: database seeding ==="
+    @echo ""
+    @just --list --group seed
+
+[group("nav")]
+x:  # Test — test DB and development tools
+    @echo ""
+    @echo "=== Test: test DB and development tools ==="
+    @echo ""
+    @just --list --group test
 
 [group("nav")]
 d:  # Diagrams — render .dot / .mmd to .svg
@@ -188,96 +202,105 @@ td-reset:
     rm -rf .todos
     td init
 
+# ── Run: business operations ────────────────────────────────────────────────
+#   Core day-to-day operations. Ordered by frequency of use.
+
 # Run analysis on TKA.DE (default test ticker)
-[group("convenience")]
+[group("run")]
 analyze-tka DEBATES="1":
     just analyze TKA.DE today {{DEBATES}}
 
-# Generate test hLedger journal with 3 platforms
-[group("convenience")]
-seed-test-journal JOURNAL="${HOME}/.hledger.journal":
-    bash scripts/seed_test_journal.sh "{{JOURNAL}}"
-
 # Show portfolio holdings (DEV, uses hledger + SQLite)
-[group("convenience")]
+[group("run")]
 portfolio-intel:
     bun scripts/portfolio-intel.ts
 
 # Show portfolio holdings (TEST mode)
-[group("convenience")]
+[group("run")]
 portfolio-intel-test:
     TA_DASHBOARD_PORT=3000 bun scripts/portfolio-intel.ts test
 
-# Seed DEV SQLite database (positions, signals, analyses, watchlist, prices)
-[group("convenience")]
-seed-db:
-    bun scripts/seed_database.ts
-
-# Seed TEST SQLite database
-[group("convenience")]
-test-seed-db:
-    TEST_MODE=1 bun scripts/seed_database.ts --db ./test_portfolio.db
-
-# Seed positions only (DEV)
-[group("convenience")]
-seed-db-positions:
-    bun scripts/seed_database.ts --positions
-
-# Seed signals only (DEV)
-[group("convenience")]
-seed-db-signals:
-    bun scripts/seed_database.ts --signals
-
-# Seed exit plans from YAML (DEV)
-[group("convenience")]
-seed-db-exit-plans:
-    bun scripts/seed_database.ts --exit-plans
-
-# Seed prices from Yahoo Finance (backfill open positions)
-[group("convenience")]
-seed-db-prices:
-    bun scripts/seed_database.ts --prices
-
 # Sync prices for all open positions (catch-up latest)
-[group("convenience")]
+[group("run")]
 sync-prices:
     bun run scripts/sync-prices.ts
 
 # Full sync: gap fill + catch-up for all open positions
-[group("convenience")]
+[group("run")]
 sync-prices-all:
     bun run scripts/sync-prices.ts --all
 
 # Sync prices for a single ticker: TICKER=AAPL just sync-prices-ticker
-[group("convenience")]
+[group("run")]
 sync-prices-ticker:
     @if [ -z "${TICKER}" ]; then echo "Usage: TICKER=AAPL just sync-prices-ticker"; exit 1; fi
     bun scripts/sync-prices.ts --ticker "${TICKER}"
 
-# Seed signals to TEST DB
-[group("convenience")]
-test-db-signal:
-    bun scripts/seed_database.ts --db ./test_portfolio.db --signals
+# Seed DEV SQLite database (positions, signals, analyses, watchlist, prices)
+[group("run")]
+seed-db:
+    bun scripts/seed_database.ts
+
+# ── Seed: database seeding variants ────────────────────────────────────────
+#   Partial seeding for focused reset. Less frequently used than run recipes.
+
+# Seed positions only (DEV)
+[group("seed")]
+seed-db-positions:
+    bun scripts/seed_database.ts --positions
+
+# Seed signals only (DEV)
+[group("seed")]
+seed-db-signals:
+    bun scripts/seed_database.ts --signals
+
+# Seed exit plans from YAML (DEV)
+[group("seed")]
+seed-db-exit-plans:
+    bun scripts/seed_database.ts --exit-plans
+
+# Seed prices from Yahoo Finance (backfill open positions)
+[group("seed")]
+seed-db-prices:
+    bun scripts/seed_database.ts --prices
+
+# Seed TEST SQLite database
+[group("seed")]
+test-seed-db:
+    TEST_MODE=1 bun scripts/seed_database.ts --db ./test_portfolio.db
+
+# Generate test hLedger journal with 3 platforms
+[group("seed")]
+seed-test-journal JOURNAL="${HOME}/.hledger.journal":
+    bash scripts/seed_test_journal.sh "{{JOURNAL}}"
+
+# ── Test: development and test DB tools ─────────────────────────────────
+#   Test DB lifecycle, diagnostics, and cross-environment copying.
 
 # Create fresh test_portfolio.db with schema
-[group("convenience")]
+[group("test")]
 test-init:
     bash scripts/init-test-db.sh
 
 # Wipe and recreate test DB
-[group("convenience")]
+[group("test")]
 test-reset:
     bash scripts/init-test-db.sh --reset
 
 # Seed test DB with E2E data (positions + signals)
-[group("convenience")]
+[group("test")]
 test-seed:
     bash scripts/init-test-db.sh --reset
     sqlite3 test_portfolio.db < scripts/seed-test-db.sql
     echo "TEST DB seeded: $(sqlite3 test_portfolio.db 'SELECT COUNT(*) FROM positions') positions, $(sqlite3 test_portfolio.db 'SELECT COUNT(*) FROM signals') signals"
 
+# Seed signals to TEST DB
+[group("test")]
+test-db-signal:
+    bun scripts/seed_database.ts --db ./test_portfolio.db --signals
+
 # Show row counts for DEV and TEST DB
-[group("convenience")]
+[group("test")]
 test-db-stats:
     @echo "=== DEV portfolio.db ==="
     sqlite3 portfolio.db "SELECT 'positions', COUNT(*) FROM positions UNION ALL SELECT 'signals', COUNT(*) FROM signals UNION ALL SELECT 'analyses', COUNT(*) FROM analyses UNION ALL SELECT 'watchlist', COUNT(*) FROM watchlist"
@@ -286,12 +309,12 @@ test-db-stats:
     sqlite3 test_portfolio.db "SELECT 'positions', COUNT(*) FROM positions UNION ALL SELECT 'signals', COUNT(*) FROM signals UNION ALL SELECT 'analyses', COUNT(*) FROM analyses UNION ALL SELECT 'watchlist', COUNT(*) FROM watchlist"
 
 # Copy TEST artefacts to DEV (dry-run, shows what would change)
-[group("convenience")]
+[group("test")]
 copy-test-to-dev:
     ./scripts/copy-test-to-dev.sh
 
 # Copy TEST artefacts to DEV (apply changes)
-[group("convenience")]
+[group("test")]
 copy-test-to-dev-apply:
     ./scripts/copy-test-to-dev.sh --apply
 
