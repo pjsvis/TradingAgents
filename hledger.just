@@ -2,6 +2,26 @@
 #   Holdings, cash, allocation, prices, backups.
 #   Use: just hledger::<recipe>  or aliases: just hl, just hl-cash, etc.
 
+# Default: show available hledger recipes
+[group("hledger")]
+default:
+    @echo "=== hLedger recipes ==="
+    @echo ""
+    @echo "  just hledger::hl                 — holdings summary with market values"
+    @echo "  just hledger::hl-holdings        — holdings only (excludes cash)"
+    @echo "  just hledger::hl-cash             — cash balances per platform"
+    @echo "  just hledger::hl-accounts         — all accounts defined in journal"
+    @echo "  just hledger::hl-prices           — price history"
+    @echo "  just hledger::hl-update-prices    — fetch latest prices from Yahoo Finance"
+    @echo "  just hledger::hl-allocation      — allocation tree by account"
+    @echo "  just hledger::hl-register TICKER  — transaction history for a ticker"
+    @echo "  just hledger::hl-net-worth        — net worth over time"
+    @echo "  just hledger::hl-backup           — backup hledger journal"
+    @echo "  just hledger::hl-backup-verify    — verify latest backup integrity"
+    @echo "  just hledger::hl-backup-restore FILE"
+    @echo ""
+    @echo "Or use aliases: just hl, just hl-cash, just hl-prices, ..."
+
 # Holdings summary with market values
 [group("hledger")]
 hl:
