@@ -27,35 +27,59 @@ set dotenv-load := true
 
 # Group navigation shortcuts — just <letter> to list that group's recipes
 [group("nav")]
-b:  # bun group
+b:  # Bun — TypeScript server tooling
+    @echo ""
+    @echo "=== Bun: TypeScript server tooling ==="
+    @echo ""
     @just --list --group bun
 
 [group("nav")]
-p:  # python group
+p:  # Python — tradingagents package, tests, analysis
+    @echo ""
+    @echo "=== Python: tradingagents package, tests, analysis ==="
+    @echo ""
     @just --list --group python
 
 [group("nav")]
-h:  # hledger group
+h:  # hLedger — plain-text accounting
+    @echo ""
+    @echo "=== hLedger: plain-text accounting ==="
+    @echo ""
     @just --list --group hledger
 
 [group("nav")]
-t:  # td group
+t:  # td — task management
+    @echo ""
+    @echo "=== td: task management ==="
+    @echo ""
     @just --list --group td
 
 [group("nav")]
-m:  # meta group
+m:  # Meta — project info, help, state
+    @echo ""
+    @echo "=== Meta: project info, help, state ==="
+    @echo ""
     @just --list --group meta
 
 [group("nav")]
-c:  # convenience group
+c:  # Convenience — common one-liners
+    @echo ""
+    @echo "=== Convenience: common one-liners ==="
+    @echo ""
     @just --list --group convenience
 
 [group("nav")]
-d:  # diagrams group
+d:  # Diagrams — render .dot / .mmd to .svg
+    @echo ""
+    @echo "=== Diagrams: render .dot / .mmd to .svg ==="
+    @echo ""
     @just --list --group diagrams
 
 [group("nav")]
-pr:  # pr group
+pr:  # PR — GitHub pull request helpers
+    @echo ""
+    @echo "=== PR: GitHub pull request helpers ==="
+    @echo ""
     @just --list --group pr
 
 # Type-check + lint + custom gates
