@@ -4,7 +4,7 @@
  * Body: { account_id, balance, note? }
  */
 import { Hono } from "hono"
-import { DatabaseFactory } from "../../src/lib/db.ts"
+import { DatabaseFactory } from "../../lib/db.ts"
 
 export const portfolioBalanceRouter = new Hono()
 

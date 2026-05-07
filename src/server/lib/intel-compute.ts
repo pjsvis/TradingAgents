@@ -1,4 +1,4 @@
-import { DatabaseFactory } from "../../src/lib/db.ts"
+import { DatabaseFactory } from "../../lib/db.ts"
 import { checkRules, loadRules, suggestRebalance } from "./governance.ts"
 import { getHoldings } from "./hledger.ts"
 import { fetchPrices } from "./intel-prices.ts"

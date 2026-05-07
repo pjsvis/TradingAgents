@@ -5,7 +5,7 @@ import type { JSX } from "hono/jsx";
 import { serveStatic } from "hono/bun";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { DatabaseFactory } from "../src/lib/db.ts";
+import { DatabaseFactory } from "../lib/db.ts";
 import { cfg } from "./lib/settings.ts";
 import { portfolioRouter } from "./routes/portfolio.tsx";
 import { analysisRouter } from "./routes/analysis.ts";

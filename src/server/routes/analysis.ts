@@ -3,7 +3,7 @@ import { existsSync } from "node:fs"
 import { dirname, join } from "node:path"
 import { Hono } from "hono"
 import { streamSSE } from "hono/streaming"
-import { DatabaseFactory } from "../../src/lib/db.ts"
+import { DatabaseFactory } from "../../lib/db.ts"
 import { sanitizeForDb } from "../lib/sanitize.ts"
 
 export const analysisRouter = new Hono()

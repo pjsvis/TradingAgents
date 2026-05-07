@@ -1,5 +1,5 @@
 import { type Context, Hono } from "hono"
-import { DatabaseFactory } from "../../src/lib/db.ts"
+import { DatabaseFactory } from "../../lib/db.ts"
 import { sanitizeForDb } from "../lib/sanitize.ts"
 import { computePortfolioSummary } from "../lib/portfolio-data.ts"
 import { PortfolioSummaryView } from "../views/portfolio-summary.tsx"
