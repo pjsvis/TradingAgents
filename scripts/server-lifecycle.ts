@@ -86,7 +86,6 @@ interface ServiceRow {
   status: string
   pid: string
   port: string
-  just: string
 }
 
 async function getDashboardRow(): Promise<ServiceRow> {
@@ -97,7 +96,6 @@ async function getDashboardRow(): Promise<ServiceRow> {
       status: "stopped",
       pid: "—",
       port: String(PORT),
-      just: "serve",
     }
   }
   if (!isProcessAlive(pid)) {
@@ -107,7 +105,6 @@ async function getDashboardRow(): Promise<ServiceRow> {
       status: "stopped",
       pid: "—",
       port: String(PORT),
-      just: "serve",
     }
   }
   const listening = !isPortFree(PORT)
@@ -116,7 +113,6 @@ async function getDashboardRow(): Promise<ServiceRow> {
     status: listening ? "running" : "unknown",
     pid: String(pid),
     port: String(PORT),
-    just: "serve",
   }
 }
 
@@ -129,7 +125,6 @@ function getDatabaseRow(): ServiceRow {
     status: existsSync(active) ? "running" : "unknown",
     pid: "—",
     port: "—",
-    just: "persist",
   }
 }
 
@@ -146,7 +141,6 @@ function getGitnexusRow(): ServiceRow {
     status: indexed ? "running" : "stopped",
     pid: "—",
     port: "—",
-    just: "index",
   }
 }
 
@@ -156,19 +150,19 @@ async function cmdStatus(): Promise<void> {
   const rows = [await getDashboardRow(), getDatabaseRow(), getGitnexusRow()]
 
   const tableLines = [
-    "Service            Status     PID     Port  Just",
-    "───────────────────────────────────────────────────",
+    "Service            Status     PID     Port",
+    "───────────────────────────────────────────",
     ...rows.map(
       (r) =>
-        `${r.name.padEnd(18)} ● ${r.status.padEnd(8)} ${r.pid.padStart(6)} ${r.port.padStart(5)}  ${r.just}`,
+        `${r.name.padEnd(18)} ● ${r.status.padEnd(8)} ${r.pid.padStart(6)} ${r.port.padStart(5)}`,
     ),
     "",
-    "just serve / persist / index",
+    "Run just service-help for available commands",
   ].join("\n")
 
   console.log("")
   console.log(
-    await gum("TradingAgents", [
+    await gum("TradingAgents Services", [
       "--bold",
       "--foreground",
       "212",
@@ -348,6 +342,39 @@ async function cmdLogs(): Promise<void> {
   }
 }
 
+async function cmdServiceHelp(): Promise<void> {
+  const lines = [
+    "Dashboard Server",
+    "  just start     Start dashboard server",
+    "  just stop      Stop dashboard server",
+    "  just restart   Restart dashboard server",
+    "  just logs      Show recent server logs",
+    "  just ports     Show listening ports",
+    "",
+    "GitNexus Index",
+    "  just gn-diagrams      Generate project graphs",
+    "  just gn-analyze       Re-index the repository",
+    "",
+    "Database",
+    "  just backup           Create database backup",
+    "  just db-stats         Show database statistics",
+  ].join("\n")
+  console.log("")
+  console.log(
+    await gum("Service Commands", [
+      "--bold",
+      "--foreground",
+      "212",
+      "--width",
+      "64",
+      "--align",
+      "center",
+    ]),
+  )
+  console.log(await gum(lines, ["--border", "rounded", "--padding", "1 2", "--width", "64"]))
+  console.log("")
+}
+
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -375,17 +402,22 @@ async function main() {
     case "logs":
       await cmdLogs()
       break
+    case "service-help":
+    case "h":
+      await cmdServiceHelp()
+      break
     default:
       console.log("Usage: bun scripts/server-lifecycle.ts <command>")
       console.log("")
       console.log("Commands:")
-      console.log("  status    Show all service status")
-      console.log("  start     Start dashboard server")
-      console.log("  serve     Alias for start")
-      console.log("  stop      Stop dashboard server")
-      console.log("  restart   Restart dashboard server")
-      console.log("  ports     Show listening ports")
-      console.log("  logs      Show recent server logs")
+      console.log("  status         Show all service status")
+      console.log("  start          Start dashboard server")
+      console.log("  serve          Alias for start")
+      console.log("  stop           Stop dashboard server")
+      console.log("  restart        Restart dashboard server")
+      console.log("  ports          Show listening ports")
+      console.log("  logs           Show recent server logs")
+      console.log("  service-help   Show available commands")
       console.log("")
       console.log("Examples:")
       console.log("  bun scripts/server-lifecycle.ts status")

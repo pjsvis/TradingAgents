@@ -584,6 +584,11 @@ ports:
 logs:
     bun scripts/server-lifecycle.ts logs
 
+# Show all available service commands
+[group("srv")]
+service-help:
+    bun scripts/server-lifecycle.ts service-help
+
 # ── Lab: terminal experiments ─────────────────────────────────────────────
 #   Safe playground for testing CLI output, API calls, formatting.
 
