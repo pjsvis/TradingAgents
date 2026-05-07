@@ -548,6 +548,41 @@ gn:  # GitNexus — code knowledge graph
     @echo ""
     @just --list --group gn
 
+[group("nav")]
+srv:  # Server — lifecycle management
+    @echo ""
+    @echo "=== Server: lifecycle management ==="
+    @echo ""
+    @just --list --group srv
+
+# ── Server lifecycle ────────────────────────────────────────────────────────
+#   Start, stop, restart, and monitor the dashboard server.
+
+# Show all service status
+[group("srv")]
+status:
+    bun scripts/server-lifecycle.ts status
+
+# Start dashboard server
+[group("srv")]
+start:
+    bun scripts/server-lifecycle.ts start
+
+# Stop dashboard server
+[group("srv")]
+stop:
+    bun scripts/server-lifecycle.ts stop
+
+# Restart dashboard server
+[group("srv")]
+restart:
+    bun scripts/server-lifecycle.ts restart
+
+# Show listening ports
+[group("srv")]
+ports:
+    bun scripts/server-lifecycle.ts ports
+
 # ── Hooks: git workflow automation ─────────────────────────────────────────
 
 # Install pre-push hook that auto-regenerates diagrams
