@@ -6,67 +6,68 @@
 
 ---
 
-## Cash / Liquid Accounts
+## Cash / Liquid Accounts (IG)
 
-| Account | Balance | Currency | Platform | Notes |
-|---------|---------|----------|----------|-------|
-| Spread Bet & CFD | £511.64 | GBP | IG (Z6B1MT) | Demo account for test trading |
-| ISA Accounts | £20,868.50 | GBP | IG (Z6B1MS) | 3.75% AER |
-| AJBell SIPP | £108,221.44 | GBP | AJBell | Policy: ABQPMDS |
-| Aviva Cash | £134,761.89 | GBP | Aviva | Policy: AV2238306-001 |
-| NS&I | £15,875.00 | GBP | NS&I | Premium bonds |
-| Utmost EWA | £34,171.21 | GBP | Utmost | |
-| Utmost MSA | £2,697.82 | GBP | Utmost | |
-| **Total Cash/Liquid** | **£317,206.96** | | | |
+| Account | Balance | Currency | Platform | IG Account ID | Notes |
+|---------|---------|----------|----------|---------------|-------|
+| Spread Bet | £511.64 | GBP | IG | Z6B1MT | Demo account for test trading |
+| ISA | £20,868.50 | GBP | IG | Z6B1MS | 3.75% AER |
+| Share Dealing | £9,834.95 | GBP | IG | Z6B1MS | Profit: £419.46 |
+| **IG Total** | **£31,215.09** | | | | |
+
+---
+
+## External Accounts (Locked / Not IG)
+
+| Account | Balance | Currency | Type | Notes |
+|---------|---------|----------|------|-------|
+| AJBell SIPP | £108,221.44 | GBP | SIPP | Policy: ABQPMDS |
+| Aviva Cash | £134,761.89 | GBP | Company Pension | Policy: AV2238306-001 |
+| NS&I | £15,875.00 | GBP | Premium Bonds | Winnings tax-free |
+| Utmost EWA | £34,171.21 | GBP | Pension? | |
+| Utmost MSA | £2,697.82 | GBP | Pension? | |
+| **External Total** | **£295,727.36** | | | **Not available for IG trading** |
 
 ---
 
 ## Share Dealing Positions (IG Share Dealing)
 
-| Ticker | Shares | Value | Currency | Exchange |
-|--------|--------|-------|----------|----------|
-| thyssenkrupp AG (TKA.DE) | 115 | €1,255.80 | EUR | XETRA |
-| Tkms AG & Co KGaA (TKMS.DE) | 5 | €407.00 | EUR | XETRA |
-| **Total Share Dealing** | | **€1,662.80** | | |
-
-**Note:** No separate cash balance shown for Share Dealing. Cash may be held in the ISA account or zero.
+| Ticker | Shares | Value | Currency | Exchange | Custody |
+|--------|--------|-------|----------|----------|---------|
+| thyssenkrupp AG (TKA.DE) | 115 | ~£1,050 | EUR | XETRA | IG Share Dealing |
+| Tkms AG & Co KGaA (TKMS.DE) | 5 | ~£340 | EUR | XETRA | IG Share Dealing |
+| **Total Share Dealing** | | **~£1,390** | | | |
 
 ---
 
 ## Platform Summary
 
-| Platform | Type | Cash | Positions | Total Exposure |
-|----------|------|------|-----------|----------------|
-| IG — Spread Bet | Demo | £511.64 | — | £511.64 |
-| IG — ISA | ISA | £20,868.50 | TKA.DE, TKMS.DE (via Share Dealing?) | ~£22,420 |
-| AJBell | SIPP | £108,221.44 | — | £108,221.44 |
-| Aviva | Company Pension | £134,761.89 | — | £134,761.89 |
-| NS&I | Cash | £15,875.00 | — | £15,875.00 |
-| Utmost EWA | Pension? | £34,171.21 | — | £34,171.21 |
-| Utmost MSA | Pension? | £2,697.82 | — | £2,697.82 |
-
----
-
-## Questions to Verify
-
-1. **Share Dealing cash:** Is there a separate cash balance for IG Share Dealing, or is cash held in the ISA?
-2. **thyssenkrupp / Tkms:** Are these positions in IG Share Dealing, or held elsewhere?
-3. **Utmost EWA / MSA:** Are these pensions (locked) or accessible investment accounts?
-4. **Total investable:** How much of the above is available for new trades vs. locked in pensions?
+| Platform | Type | Cash | Positions | Total Exposure | Tradeable? |
+|----------|------|------|-----------|----------------|------------|
+| IG — Spread Bet | Demo | £511.64 | — | £511.64 | ✅ Test trades |
+| IG — ISA | ISA | £20,868.50 | — | £20,868.50 | ✅ Real trades |
+| IG — Share Dealing | Share Dealing | £9,834.95 | TKA.DE, TKMS.DE | ~£11,225 | ✅ Real trades |
+| AJBell | SIPP | £108,221.44 | — | £108,221.44 | ❌ Locked until 55 |
+| Aviva | Pension | £134,761.89 | — | £134,761.89 | ❌ Employer-matched |
+| NS&I | Cash | £15,875.00 | — | £15,875.00 | ❌ Premium bonds only |
+| Utmost | Pension? | £36,869.03 | — | £36,869.03 | ❌ Likely locked |
 
 ---
 
 ## Trade Calculator Defaults
 
-Based on this snapshot, suggested calculator defaults:
+| Parameter | Spread Bet | ISA | Share Dealing |
+|-----------|-----------|-----|---------------|
+| Account balance | £511.64 | £20,868.50 | £9,834.95 |
+| Risk per trade (2%) | £10.23 | £417.37 | £196.70 |
+| Min stop distance | 8 pts (FTSE) | 1 pt (AAPL) | 1 pt (AAPL) |
+| Margin factor | 5% (FTSE) | 20% (AAPL) | 20% (AAPL) |
 
-| Parameter | Value |
-|-----------|-------|
-| Account balance (spread bet) | £511.64 |
-| Account balance (ISA) | £20,868.50 |
-| Risk per trade | 2% (£10.23 spread bet / £417.37 ISA) |
-| Platforms to trade | IG only (spread bet + ISA) |
+**Spread bet demo is tight.** £10.23 risk limits us to:
+- Low-priced indices (FTSE at £5/point = 2pt stop)
+- Low stake sizes
+- Test trades only
 
-**Note:** Spread bet demo account (£511.64) is small for 2% risk. A single trade at £10 risk may be impractical for most instruments. Consider:
-- Using ISA for real trades (£417 risk per trade is workable)
-- Or increasing demo account balance for testing
+**ISA is the primary trading account.** £417 risk per trade is workable for most instruments.
+
+**Share Dealing has existing positions.** New trades from £9,834 cash. 20% margin on AAPL = ~£200 margin per £1,000 notional.
