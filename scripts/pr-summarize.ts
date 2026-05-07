@@ -31,7 +31,7 @@ interface PrIssue {
 const SYSTEM_PROMPT = `You are a senior code reviewer. Read the following PR review document and extract all actionable issues.
 
 For each issue, provide in JSON:
-- severity: "bug" (🔴), "warning" (🟡), or "rule" (📘)
+- severity: "🔴" (bug), "🟡" (warning), or "📘" (rule)
 - title: short summary (max 10 words)
 - files: array of file paths with line ranges if available
 - description: one-paragraph explanation of the problem

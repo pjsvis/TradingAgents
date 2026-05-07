@@ -43,8 +43,9 @@ for (const file of allFiles) {
     const line = lines[i]
     // Strip end-of-line comments
     const code = line.replace(/\/\/.*$/, "")
-    const idx = code.indexOf("new Database(")
-    if (idx === -1) continue
+    const match = /\bnew\s+Database\s*\(/.exec(code)
+    if (!match) continue
+    const idx = match.index
 
     // Check if the match is inside a string literal by counting quotes before it
     const before = code.slice(0, idx)

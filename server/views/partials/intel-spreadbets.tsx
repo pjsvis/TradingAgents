@@ -44,7 +44,9 @@ export function SpreadBetTable({ bets }: { bets: SpreadBetWithPnl[] }) {
                   {b.current_price_gbp != null ? `£${fmtCommas(b.current_price_gbp)}` : "—"}
                 </td>
                 <td class={pnlCls} style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1">
-                  {b.pnl_gbp != null ? (b.pnl_gbp >= 0 ? "+" : "") + `£${fmtCommas(b.pnl_gbp)}` : "—"}
+                  {b.pnl_gbp != null
+                    ? `${b.pnl_gbp >= 0 ? "+" : "-"}£${fmtCommas(Math.abs(b.pnl_gbp))}`
+                    : "—"}
                 </td>
                 <td class={pnlCls} style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1">
                   {b.pnl_pct != null ? (b.pnl_pct >= 0 ? "+" : "") + `${fmtCommas(b.pnl_pct)}%` : "—"}

@@ -456,7 +456,11 @@ pr-fetch NUM:  # fetch PR #NUM as markdown via defuddle
     mkdir -p debriefs/reviews
     url="https://github.com/pjsvis/TradingAgents/pull/{{NUM}}"
     file="debriefs/reviews/pr-{{NUM}}.md"
-    defuddle parse --markdown "$url" > "$file"
+    tmp="$(mktemp)"
+    trap 'rm -f "$tmp"' EXIT
+    defuddle parse --markdown "$url" > "$tmp"
+    mv "$tmp" "$file"
+    trap - EXIT
     echo "Saved: $file"
 
 [group("pr")]
