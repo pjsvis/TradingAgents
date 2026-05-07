@@ -215,7 +215,7 @@ grep -r "ig\|ajbell\|aviva\|nsandi" cli/trading server/routes tests/ \
 | Command | Status | Why |
 |---------|--------|-----|
 | `gitnexus query` | ❌ Broken | FTS index segfaults in LadybugDB. Use `grep` or Cypher instead. |
-| `gitnexus serve` | ⚠️ Unreliable | Web UI connection drops. CLI is sufficient. |
+| `gitnexus serve` | ❌ Broken | CSP on gitnexus.vercel.app blocks localhost. Impossible to fix from user side. |
 
 ---
 

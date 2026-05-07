@@ -41,9 +41,21 @@ We attempted three fixes:
 
 **Verdict:** This is a LadybugDB native binding bug. Not worth fighting. Skip `query` entirely — you have grep, Warp semantic search, and Cypher for structural queries.
 
-### `serve` command — limited value
+### `serve` command — completely broken in practice
 
-`gitnexus serve` starts on port 4747 and bridges the CLI index to the web UI at gitnexus.vercel.app. It starts fine but the web UI connection is unreliable. Low priority — the CLI gives you everything you need.
+`gitnexus serve` starts on port 4747 and bridges the CLI index to the web UI at gitnexus.vercel.app. **It does not work.**
+
+**Root cause:** The web UI is hosted on `gitnexus.vercel.app` (Vercel). Its Content-Security-Policy sets `default-src 'none'`, which blocks all cross-origin connections to `localhost:4747`. The browser console shows:
+
+```
+GET http://localhost:4747/ 404 (Not Found)
+Connecting to 'http://localhost:4747/.well-known/appspecific/com.chrome.devtools.json'
+violates Content Security Policy directive: "default-src 'none'".
+```
+
+This is an architectural impossibility: a remote web app cannot connect to a local server when CSP forbids it. No workaround without modifying Vercel's CSP headers (not possible for users).
+
+**Verdict:** Do not use `serve`. The CLI (`context`, `impact`, `cypher`) gives you everything you need. If you want a visual graph, use KuzuDB Explorer directly on `.gitnexus/lbug` or export Cypher results to a visualisation tool.
 
 ---
 
