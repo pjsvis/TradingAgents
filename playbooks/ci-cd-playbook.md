@@ -140,16 +140,37 @@ Runs three steps:
 1. **Clean:** `rm docs/diagrams/*.svg` — removes stale SVGs
 2. **Generate GitNexus graphs:**
    ```bash
-   bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
-   bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render
-   bun scripts/gitnexus-to-dot.ts --symbol calculateATR --depth 1 --render
+   bun scripts/gitnexus-batch.ts --render
    ```
-   Writes: `docs/diagrams/gn-impact-*.dot`, `.svg`, `.png`
+   Reads `.tradingagents/gitnexus-diagrams.json` and generates all configured
+   impact graphs (symbols) and file graphs. Writes: `docs/diagrams/gn-impact-*.dot`,
+   `gn-file-*.dot`, `.svg`, `.png`
 3. **Render static diagrams:**
    ```bash
    bun scripts/render_diagrams.ts
    ```
    Converts all `.dot` and `.mmd` files in `docs/diagrams/` to `.svg`
+
+### Adding a New GitNexus Diagram
+
+Edit `.tradingagents/gitnexus-diagrams.json`:
+
+```json
+{
+  "symbols": [
+    {"name": "calculateTradePlan", "depth": 1},
+    {"name": "DatabaseFactory", "depth": 2},
+    {"name": "calculateATR", "depth": 1},
+    {"name": "NewSymbol", "depth": 1}
+  ],
+  "files": [
+    "server/index.tsx",
+    "cli/trading/main.ts"
+  ]
+}
+```
+
+Then run `just regen-diagrams`. No Justfile changes needed.
 
 ### Committing
 

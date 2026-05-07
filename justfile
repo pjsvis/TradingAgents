@@ -429,9 +429,7 @@ regen-diagrams:
     @echo "=== Step 1: Clean old SVGs ==="
     rm -f docs/diagrams/*.svg
     @echo "=== Step 2: Generate GitNexus graphs ==="
-    bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
-    bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render
-    bun scripts/gitnexus-to-dot.ts --symbol calculateATR --depth 1 --render
+    bun scripts/gitnexus-batch.ts --render
     @echo "=== Step 3: Render all DOT files to SVG ==="
     bun scripts/render_diagrams.ts
     @echo ""
@@ -514,12 +512,10 @@ gn-graph-file FILE:
 [group("gn")]
 gn-diagrams:
     @echo "Generating GitNexus impact graphs..."
-    bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
-    bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render
-    bun scripts/gitnexus-to-dot.ts --symbol calculateATR --depth 1 --render
+    bun scripts/gitnexus-batch.ts --render
     @echo ""
     @echo "Generated:"
-    @ls -1 docs/diagrams/gn-impact-*.dot 2>/dev/null || echo "  (no files yet)"
+    @ls -1 docs/diagrams/gn-impact-*.dot docs/diagrams/gn-file-*.dot 2>/dev/null || echo "  (no files yet)"
 
 # Remove generated GitNexus diagrams
 [group("gn")]
@@ -563,7 +559,7 @@ srv:  # Server — lifecycle management
 status:
     bun scripts/server-lifecycle.ts status
 
-# Start dashboard server
+# Start dashboard server (background daemon)
 [group("srv")]
 start:
     bun scripts/server-lifecycle.ts start
@@ -582,6 +578,11 @@ restart:
 [group("srv")]
 ports:
     bun scripts/server-lifecycle.ts ports
+
+# Show recent server logs
+[group("srv")]
+logs:
+    bun scripts/server-lifecycle.ts logs
 
 # ── Lab: terminal experiments ─────────────────────────────────────────────
 #   Safe playground for testing CLI output, API calls, formatting.
