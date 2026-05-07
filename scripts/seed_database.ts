@@ -27,7 +27,7 @@ import {
 import { homedir } from "node:os"
 import { join } from "node:path"
 import * as yaml from "js-yaml"
-import { DatabaseFactory } from "../server/lib/db.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
 
 const DEFAULT_DB = join(process.cwd(), "portfolio.db")
 const POSITIONS_BASE = join(homedir(), ".tradingagents", "positions")

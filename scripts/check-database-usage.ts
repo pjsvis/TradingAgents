@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Gate: Only server/lib/db.ts may create SQLite Database instances.
+ * Gate: Only src/lib/db.ts may create SQLite Database instances.
  *
  * All code must use DatabaseFactory.connect() / DatabaseFactory.get().
  * See: playbooks/sqlite-playbook.md
@@ -10,7 +10,7 @@ import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 
 const EXCLUDED_DIRS = ["node_modules", ".git", "debriefs", "briefs"]
-const ALLOWED_FILE = join("server", "lib", "db.ts")
+const ALLOWED_FILE = join("src", "lib", "db.ts")
 
 function walk(dir: string, files: string[] = []): string[] {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

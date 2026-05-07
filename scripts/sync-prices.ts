@@ -16,7 +16,7 @@
 import type { Database } from "bun:sqlite"
 import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
-import { DatabaseFactory } from "../server/lib/db.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
 
 const DEFAULT_DB = join(process.cwd(), "portfolio.db")
 

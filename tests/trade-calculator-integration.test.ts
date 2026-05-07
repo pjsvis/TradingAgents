@@ -6,8 +6,8 @@
  */
 
 import { beforeAll, describe, expect, test } from "bun:test"
-import { DatabaseFactory } from "../server/lib/db.ts"
-import { calculateTradePlan, type PriceBar } from "../server/lib/trade-calculator.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
+import { calculateTradePlan, type PriceBar } from "../src/lib/trade-calculator.ts"
 
 describe("trade-calculator integration: real price data", () => {
   let aaplHistory: PriceBar[]

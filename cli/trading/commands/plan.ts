@@ -1,6 +1,6 @@
 import { defineCommand } from "citty"
-import { DatabaseFactory } from "../../../server/lib/db.ts"
-import { calculateTradePlan, type PriceBar } from "../../../server/lib/trade-calculator.ts"
+import { DatabaseFactory } from "../../../src/lib/db.ts"
+import { calculateTradePlan, type PriceBar } from "../../../src/lib/trade-calculator.ts"
 import { accountArg, entryArg, modeArg, platformArg, riskArg, tickerArg } from "../lib/args.ts"
 import { getIGInstrument, validateIGPlan } from "../lib/ig-instruments.ts"
 import { getPlatform, type TradeMode, validateMode } from "../lib/platforms.ts"

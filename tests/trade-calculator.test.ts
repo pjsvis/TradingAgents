@@ -1,5 +1,5 @@
 /**
- * Tests for server/lib/trade-calculator.ts
+ * Tests for src/lib/trade-calculator.ts
  *
  * Strategy: example-based tests with hand-verified expectations.
  * We test against known inputs where we can compute the expected
@@ -14,7 +14,7 @@ import {
   fibonacciExtension,
   findSwingHighLow,
   type PriceBar,
-} from "../server/lib/trade-calculator.ts"
+} from "../src/lib/trade-calculator.ts"
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

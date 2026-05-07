@@ -15,7 +15,7 @@
 
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from "node:fs"
 import { join } from "node:path"
-import { DatabaseFactory } from "../server/lib/db.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
 
 const BACKUP_DIR = join(process.cwd(), "backups")
 

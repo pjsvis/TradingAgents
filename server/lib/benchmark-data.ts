@@ -6,8 +6,8 @@ import { findProjectRoot } from "./utils.ts"
 
 export { type BenchmarkPrice, fetchBenchmarkPrices, type PeriodReturn } from "./benchmark.ts"
 
+import { DatabaseFactory } from "../../src/lib/db.ts"
 import { endOfToday, priceCache } from "./cache.ts"
-import { DatabaseFactory } from "./db.ts"
 import type { PriceResult } from "./types.ts"
 
 // ── Types ─────────────────────────────────────────────────────────────────────

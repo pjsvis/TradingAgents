@@ -11,7 +11,7 @@
  * Always backup first: just backup
  */
 
-import { DatabaseFactory } from "../server/lib/db.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
 
 const dbPath = process.env.PORTFOLIO_DB ?? "./portfolio.db"
 

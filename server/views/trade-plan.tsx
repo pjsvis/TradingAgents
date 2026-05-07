@@ -1,5 +1,5 @@
 /** @jsxImportSource hono/jsx */
-import type { TradePlan } from "../lib/trade-calculator.ts"
+import type { TradePlan } from "../../src/lib/trade-calculator.ts"
 
 export function TradePlanView({ plan }: { plan: TradePlan }) {
   const riskWidth = plan.entry - plan.stopLoss

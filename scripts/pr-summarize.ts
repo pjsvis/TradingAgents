@@ -39,7 +39,7 @@ For each issue, provide in JSON:
 
 Output ONLY a valid JSON array. No markdown, no prose, no code blocks. Example:
 [
-  {"severity":"bug","title":"SQLite REAL not parsed","files":["server/lib/intel-compute.ts:78-85"],"description":"...","actions":["Add parseFloat() before arithmetic"]}
+  {"severity":"bug","title":"SQLite REAL not parsed","files":["src/lib/intel-compute.ts:78-85"],"description":"...","actions":["Add parseFloat() before arithmetic"]}
 ]`
 
 // ── API call ────────────────────────────────────────────────────────────────

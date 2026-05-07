@@ -6,8 +6,8 @@
  */
 
 import { Hono } from "hono"
-import { DatabaseFactory } from "../lib/db.ts"
-import { calculateTradePlan, type PriceBar } from "../lib/trade-calculator.ts"
+import { DatabaseFactory } from "../../src/lib/db.ts"
+import { calculateTradePlan, type PriceBar } from "../../src/lib/trade-calculator.ts"
 import { TradePlanView } from "../views/trade-plan.tsx"
 
 const router = new Hono()

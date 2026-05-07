@@ -9,8 +9,8 @@
  * Data source: prices table (SQLite) or get_price.ts fallback.
  */
 
-import { DatabaseFactory } from "../server/lib/db.ts"
-import { calculateTradePlan } from "../server/lib/trade-calculator.ts"
+import { DatabaseFactory } from "../src/lib/db.ts"
+import { calculateTradePlan } from "../src/lib/trade-calculator.ts"
 
 interface PriceRow {
   date: string

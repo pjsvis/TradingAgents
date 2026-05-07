@@ -1,5 +1,5 @@
 /** Prospects data layer — extracted from route for reuse. */
-import { DatabaseFactory } from "./db.ts"
+import { DatabaseFactory } from "../../src/lib/db.ts"
 import { sanitizeForDb } from "./sanitize.ts"
 
 export interface Prospect {
