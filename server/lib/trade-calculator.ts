@@ -231,4 +231,3 @@ function round2(n: number): number {
 function round4(n: number): number {
   return Math.round(n * 10000) / 10000
 }
-// hook test
