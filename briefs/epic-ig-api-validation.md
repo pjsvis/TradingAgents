@@ -53,7 +53,7 @@ Set up an IG demo account and use the IG REST API to place test trades. Compare 
 | S02 | **User** | ✅ Done — connectivity config validated by agent via API calls |
 | S03 | **Agent** | ✅ Done — test trades placed (FTSE spread bet opened & closed) |
 | S04 | **Agent** | 🔄 Open — calculator validation vs. IG actuals |
-| S05 | **Agent** | ⏳ Open — order placement guide |
+| S05 | **Agent** | ✅ Done — order placement guide |
 
 ---
 
@@ -191,7 +191,19 @@ Set up an IG demo account and use the IG REST API to place test trades. Compare 
 
 ---
 
-### IG-API-001-S05: Order Placement Guide
+### IG-API-001-S05: Order Placement Guide (Agent — ✅ Complete)
+
+**Status:** Complete 2026-05-07
+**Output:** `docs/ig-trading-guide.md`
+
+**Contents:**
+- Full trade lifecycle: auth → market data → open → confirm → close → confirm
+- Spread bet example (FTSE 100, validated via live test trade: profit £5.00)
+- Share dealing example (AAPL, with demo rejection note and workaround)
+- Working orders (limit entry) with stop/limit levels
+- Stop types: normal, guaranteed, trailing
+- Error handling table: 400/401/404/429 with fixes
+- TypeScript interfaces for session, order, confirm response
 
 **What:** Document how to reliably place trades with stops and limits via IG.
 
