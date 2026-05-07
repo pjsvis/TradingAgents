@@ -44,19 +44,25 @@ justify it in one sentence, delete it.
 |------------|---------------|-------|
 | `justfile` lowercase | Tool default; formatter compatibility | 2026-05-07 |
 | `.tsx` for JSX files | Biome parser requirement (JSX in `.ts` fails) | 2026-04-28 |
-| `scripts/lib/` for shared TS helpers | Single source of truth; avoids inline duplication | 2026-05-06 |
-| `scripts/lab/` for experiments | Loosest type constraints; safe playground | 2026-05-07 |
 | `bun` over `node` where both work | Project standard; faster; native TS | 2026-04-20 |
 | `Bun.spawn` over `execSync` | Streaming stdin support; no shell quoting bugs | 2026-05-07 |
 | Unicode literals over `\uXXXX` in JSX | Hono emits raw HTML; JS escapes only work in `{}` | 2026-05-07 |
 | No `new Database()` outside `db.ts` | Factory enforces WAL + pragmas consistently | 2026-05-06 |
 | Every deliberate folder has a `README.md` | Prevents mystery; draws boundaries between adjacent dirs | 2026-05-07 |
+| **Directory hierarchy** | | |
+| `src/` = production TS (strict) | `tsc --noEmit` enforced; tested code only | 2026-05-07 |
+| `src/lib/` = shared modules | Imported by `src/server/` and `src/cli/` | 2026-05-07 |
+| `src/server/lib/` = server-only | NOT imported outside `src/server/` | 2026-05-07 |
+| `scripts/` = support TS (loose) | Tooling, automation, not shipped | 2026-05-07 |
+| `scripts/lab/` = experiments | Loosest types; disposable | 2026-05-07 |
+| `scripts/lib/` = shared helpers | Reusable across scripts; pass `just check` | 2026-05-06 |
 
 ## Barnacle Removal Record
 
 | Date | Barnacle | Where Found | Why Removed | Removed By |
 |------|----------|-------------|-------------|------------|
 | 2026-05-07 | `Justfile` (capitalized) | `playbooks/just-playbook.md`, `ci-cd-playbook.md` | Fought `just` formatter; created duplicate file on macOS | claude |
+| 2026-05-07 | Empty `src/` directory | Project root | Claimed to be source root but contained nothing; misled every new agent | claude |
 
 ## Barnacle Inspection Prompt
 

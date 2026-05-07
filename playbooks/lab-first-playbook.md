@@ -91,7 +91,23 @@ architecture. The lab is for rapid pivoting.
 **Don't:** Leave lab scripts in the repo without a clear purpose. They become
 orphaned code that confuses future readers.
 
-## War Story
+## War Story 2: The Directory Restructure
+
+We needed to move `server/` and `cli/trading/` into `src/`. Instead of moving
+everything at once, we used the lab principle at the architecture level:
+
+1. **Phase 0 (extract):** Move shared modules (`db.ts`, `trade-calculator.ts`)
+   to `src/lib/` first, update all imports, verify with `grep`.
+2. **Phase 1 (move):** Only then move `server/` → `src/server/` and
+   `cli/trading/` → `src/cli/`. No cross-directory couplings remained.
+3. **Phase 2 (wire):** Update `justfile`, `package.json`, hardcoded paths.
+
+If we had moved directories first, 11 import statements and 1 hardcoded path
+would have broken simultaneously. The "extract-before-move" pattern is the
+lab principle applied to directory structure: prove the coupling is broken
+before changing the structure.
+
+## War Story 1: Gum Formatting
 
 The server lifecycle CLI (`scripts/server-lifecycle.ts`) had a working ASCII
 status display. We tried to replace it with Gum formatting directly in the
