@@ -106,6 +106,13 @@ pr:  # PR — GitHub pull request helpers
     @echo ""
     @just --list --group pr
 
+[group("nav")]
+hk:  # Hooks — git workflow automation
+    @echo ""
+    @echo "=== Hooks: git workflow automation ==="
+    @echo ""
+    @just --list --group hooks
+
 # Aliases for common hledger recipes (backward compat)
 alias hl := hledger::hl
 alias hl-cash := hledger::hl-cash
@@ -536,6 +543,32 @@ gn:  # GitNexus — code knowledge graph
     @echo "=== GitNexus: code knowledge graph ==="
     @echo ""
     @just --list --group gn
+
+# ── Hooks: git workflow automation ─────────────────────────────────────────
+
+# Install pre-push hook that auto-regenerates diagrams
+[group("hooks")]
+install-hooks:
+    bash scripts/install-pre-push-hook.sh
+
+# Explicit push with diagram regen (alternative to pre-push hook)
+[group("hooks")]
+push:
+    @echo "=== Regenerating diagrams ==="
+    just regen-diagrams
+    @echo ""
+    @echo "=== Checking for diagram changes ==="
+    @if git diff --quiet docs/diagrams/gn-* docs/diagrams/*.svg 2>/dev/null; then \
+        echo "No diagram changes."; \
+    else \
+        echo "Diagrams changed. Committing..."; \
+        git add docs/diagrams/gn-*.dot docs/diagrams/gn-*.svg docs/diagrams/gn-*.png 2>/dev/null || true; \
+        git add docs/diagrams/*.svg 2>/dev/null || true; \
+        git commit -m "chore(diagrams): auto-regenerate before push" --no-verify || true; \
+    fi
+    @echo ""
+    @echo "=== Pushing ==="
+    git push
 
 alias a := analyze
 alias l := lint
