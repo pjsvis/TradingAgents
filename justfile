@@ -583,6 +583,21 @@ restart:
 ports:
     bun scripts/server-lifecycle.ts ports
 
+# ── Lab: terminal experiments ─────────────────────────────────────────────
+#   Safe playground for testing CLI output, API calls, formatting.
+
+[group("lab")]
+lab-gum:
+    @echo "=== Gum CLI output experiment ==="
+    bun scripts/lab/gum.ts
+
+[group("nav")]
+lab:  # Lab — terminal experiments
+    @echo ""
+    @echo "=== Lab: terminal experiments ==="
+    @echo ""
+    @just --list --group lab
+
 # ── Hooks: git workflow automation ─────────────────────────────────────────
 
 # Install pre-push hook that auto-regenerates diagrams
