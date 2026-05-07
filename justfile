@@ -475,10 +475,23 @@ gn-cypher QUERY:
 gn-analyze:
     gitnexus analyze --force .
 
-# Start local server for web UI graph browser (port 4747)
+# Export symbol impact graph to DOT/SVG (serve is broken — use this instead)
+[group("gn")]
+gn-graph-symbol SYM:
+    bun scripts/gitnexus-to-dot.ts --symbol {{SYM}} --depth 1 --render
+
+# Export file module graph to DOT/SVG
+[group("gn")]
+gn-graph-file FILE:
+    bun scripts/gitnexus-to-dot.ts --file {{FILE}} --render --output graph-file.dot
+
+# ⚠️ BROKEN: gitnexus serve fails due to CSP on gitnexus.vercel.app
+# Use gn-graph-symbol or gn-graph-file instead
 [group("gn")]
 gn-serve:
-    gitnexus serve
+    @echo "⚠️  gitnexus serve is broken — CSP blocks localhost. Use:"
+    @echo "   just gn-graph-symbol <SYMBOL>   # impact graph"
+    @echo "   just gn-graph-file <FILE>       # module graph"
 
 # Show index status
 [group("gn")]
