@@ -329,11 +329,12 @@ db-stats-test:
     @sqlite3 test_portfolio.db "SELECT 'positions', COUNT(*) FROM positions UNION ALL SELECT 'signals', COUNT(*) FROM signals UNION ALL SELECT 'analyses', COUNT(*) FROM analyses UNION ALL SELECT 'watchlist', COUNT(*) FROM watchlist UNION ALL SELECT 'prices', COUNT(*) FROM prices UNION ALL SELECT 'accounts', COUNT(*) FROM accounts UNION ALL SELECT 'trades', COUNT(*) FROM trades" 2>/dev/null || echo "test_portfolio.db not found"
 
 # Reset TEST database (destroy and recreate)
+[confirm("Destroy and recreate test_portfolio.db?")]
 [group("db")]
 db-reset-test:
-    @echo "⚠️  Resetting test_portfolio.db..."
+    @echo "{{RED}}⚠{{NORMAL}}  Resetting test_portfolio.db..."
     TEST_MODE=1 bash scripts/init-test-db.sh --reset
-    @echo "✅ TEST database reset. Run: just seed-db-test"
+    @echo "{{GREEN}}✓{{NORMAL}} TEST database reset. Run: just seed-db-test"
 
 # ── Seed: database seeding variants ────────────────────────────────────────
 #   Partial seeding for focused reset. Less frequently used than run recipes.
@@ -557,21 +558,26 @@ srv:  # Server — lifecycle management
 # Show all service status
 [group("srv")]
 status:
+    @echo "{{CYAN}}●{{NORMAL}} Checking service status..."
     bun scripts/server-lifecycle.ts status
 
 # Start dashboard server (background daemon)
 [group("srv")]
 start:
+    @echo "{{GREEN}}▶{{NORMAL}} Starting dashboard server..."
     bun scripts/server-lifecycle.ts start
 
 # Stop dashboard server
+[confirm("Stop the dashboard server?")]
 [group("srv")]
 stop:
+    @echo "{{RED}}■{{NORMAL}} Stopping dashboard server..."
     bun scripts/server-lifecycle.ts stop
 
 # Restart dashboard server
 [group("srv")]
 restart:
+    @echo "{{YELLOW}}↻{{NORMAL}} Restarting dashboard server..."
     bun scripts/server-lifecycle.ts restart
 
 # Show listening ports
