@@ -237,5 +237,6 @@ scratchpad/
 node_modules/
 !server/lib/
 !scripts/lib/
+!cli/trading/lib/
 portfolio.db
 test_portfolio.db

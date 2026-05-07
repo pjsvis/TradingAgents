@@ -1,6 +1,7 @@
 import { defineCommand } from "citty"
 import { DatabaseFactory } from "../../../server/lib/db.ts"
 import { calculateTradePlan, type PriceBar } from "../../../server/lib/trade-calculator.ts"
+import { accountArg, entryArg, modeArg, platformArg, riskArg, tickerArg } from "../lib/args.ts"
 import { getPlatform, type TradeMode, validateMode } from "../lib/platforms.ts"
 
 // ── Types ───────────────────────────────────────────────────────────────────
@@ -165,40 +166,12 @@ export const planCommand = defineCommand({
     description: "Generate a trade plan for a ticker",
   },
   args: {
-    ticker: {
-      type: "positional",
-      description: "Stock ticker symbol (e.g., AAPL, TKA.DE)",
-      required: true,
-    },
-    platform: {
-      type: "string",
-      description: "Platform (ajbell, aviva, ig, nsandi)",
-      alias: "p",
-      default: "ig",
-    },
-    mode: {
-      type: "string",
-      description: "Trade mode (shares, spreadbet)",
-      alias: "m",
-      default: "shares",
-    },
-    account: {
-      type: "string",
-      description: "Account balance in GBP",
-      alias: "a",
-      default: "50000",
-    },
-    risk: {
-      type: "string",
-      description: "Risk per trade as decimal (e.g., 0.02 for 2%)",
-      alias: "r",
-      default: "0.02",
-    },
-    entry: {
-      type: "string",
-      description: "Manual entry price override",
-      alias: "e",
-    },
+    ticker: tickerArg,
+    platform: platformArg,
+    mode: modeArg,
+    account: accountArg,
+    risk: riskArg,
+    entry: entryArg,
   },
   run({ args }) {
     // 1. Extract
