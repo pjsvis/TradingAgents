@@ -17,6 +17,12 @@
     "portfolioDb": "portfolio.db",
     "testPortfolioDb": "test_portfolio.db"
   },
+  "trading": {
+    "defaultPlatform": "ig",
+    "defaultMode": "shares",
+    "defaultAccountBalance": 50000,
+    "defaultRiskPerTrade": 0.02
+  },
   "timeouts": {
     "analysisIdleSeconds": 240
   }

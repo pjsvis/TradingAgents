@@ -34,6 +34,12 @@ interface SettingsJson {
     portfolioDb: string
     testPortfolioDb: string
   }
+  trading: {
+    defaultPlatform: string
+    defaultMode: string
+    defaultAccountBalance: number
+    defaultRiskPerTrade: number
+  }
   timeouts: {
     analysisIdleSeconds: number
   }
@@ -112,6 +118,13 @@ export const cfg = {
     dashboardPort: optionalNum(process.env.PORT ?? process.env.TA_DASHBOARD_PORT, 3000),
     openRouterApiKey: process.env.OPENROUTER_API_KEY ?? "",
     hasOpenRouter: !!process.env.OPENROUTER_API_KEY,
+  },
+
+  trading: {
+    defaultPlatform: DEFAULTS.trading.defaultPlatform,
+    defaultMode: DEFAULTS.trading.defaultMode,
+    defaultAccountBalance: DEFAULTS.trading.defaultAccountBalance,
+    defaultRiskPerTrade: DEFAULTS.trading.defaultRiskPerTrade,
   },
 
   timeouts: {

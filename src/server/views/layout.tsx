@@ -18,9 +18,13 @@ export function Layout(props: LayoutProps) {
         <script src="https://unpkg.com/htmx.org@2.0.4" />
       </head>
       <body>
-        {props.testMode && (
+        {props.testMode ? (
           <div style="background:#f59e0b;color:#000;text-align:center;padding:4px;font-size:0.75em;font-weight:700;letter-spacing:0.05em">
             TEST MODE — data is isolated from production
+          </div>
+        ) : (
+          <div style="background:#22c55e;color:#fff;text-align:center;padding:4px;font-size:0.75em;font-weight:700;letter-spacing:0.05em">
+            LIVE MODE — connected to production database
           </div>
         )}
         <header>
