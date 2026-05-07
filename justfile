@@ -152,13 +152,13 @@ lint-fix:
 [group("bun")]
 serve:
     pkill -9 -f bun 2>/dev/null || true
-    bun run server/index.tsx
+    bun run src/server/index.tsx
 
 # Start dashboard server (TEST mode, uses test_portfolio.db)
 [group("bun")]
 serve-test:
     pkill -9 -f bun 2>/dev/null || true
-    TEST_MODE=1 TEST_HLEDGER_FILE="${HOME}/.tradingagents/test_hledger.journal" bun run server/index.tsx
+    TEST_MODE=1 TEST_HLEDGER_FILE="${HOME}/.tradingagents/test_hledger.journal" bun run src/server/index.tsx
 
 # Install Python dependencies
 [group("python")]

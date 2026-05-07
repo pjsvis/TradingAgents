@@ -7,7 +7,7 @@
  *   bun run scripts/sync-prices.ts --ticker AAPL # Backfill single ticker from entry date
  *   bun run scripts/sync-prices.ts --all         # Full catch-up (gap fill + latest)
  *
- * DB resolution (mirrors server/index.tsx):
+ * DB resolution (mirrors src/server/index.tsx):
  *   --db PATH       Explicit path
  *   TEST_MODE=1     Uses TEST_PORTFOLIO_DB
  *   default         ./portfolio.db

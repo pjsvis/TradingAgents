@@ -9,7 +9,7 @@
  *   bun run scripts/seed_database.ts --signals    # Signals only
  *   bun run scripts/seed_database.ts --all        # Everything (default)
  *
- * DB resolution (mirrors server/index.tsx):
+ * DB resolution (mirrors src/server/index.tsx):
  *   --db PATH         Explicit path (highest priority)
  *   PORTFOLIO_DB      DEV database path
  *   TEST_MODE=1       Uses TEST_PORTFOLIO_DB or ./test_portfolio.db

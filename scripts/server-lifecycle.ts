@@ -222,7 +222,7 @@ async function cmdStart(): Promise<void> {
 
   // Spawn server with log capture
   const logFd = await Bun.file(LOG_FILE).writer()
-  const child = spawn("bun", ["run", "server/index.tsx"], {
+  const child = spawn("bun", ["run", "src/server/index.tsx"], {
     detached: true,
     stdio: ["ignore", "pipe", "pipe"],
   })

@@ -262,7 +262,7 @@ function main() {
     console.log("Verify:")
     console.log("  just db-stats          # show LIVE database stats")
     console.log("  just hledger::hl       # show hledger balances")
-    console.log("  bun run server/index.tsx # start dashboard and check holdings")
+    console.log("  bun run src/server/index.tsx # start dashboard and check holdings")
   } finally {
     DatabaseFactory.close()
   }

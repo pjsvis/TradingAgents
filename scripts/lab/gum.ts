@@ -27,7 +27,7 @@ console.log(
 const table = [
   "Service            Status     PID     Port  Details",
   "───────────────────────────────────────────────────",
-  "Dashboard Server   ● running   49039  3000  bun run server/index.tsx",
+  "Dashboard Server   ● running   49039  3000  bun run src/server/index.tsx",
   "SQLite (LIVE)      ● running       —     —  Database: ./portfolio.db",
   "GitNexus Index     ● running       —     —  Indexed: TradingAgents",
 ].join("\n")
