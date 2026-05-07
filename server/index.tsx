@@ -21,6 +21,7 @@ import { feedbackRouter } from "./routes/feedback.tsx";
 import { workflowRouter } from "./routes/workflow.tsx";
 import { intelligenceRouter } from "./routes/portfolio-intelligence.tsx";
 import { portfolioBalanceRouter } from "./routes/portfolio-balance.ts";
+import { tradePlanRouter } from "./routes/trade-plan.tsx";
 import { Layout } from "./views/layout.tsx";
 import { PortfolioView } from "./views/portfolio.tsx";
 import { AnalysisView } from "./views/analysis.tsx";
@@ -153,6 +154,7 @@ app.route("/api/feedback", feedbackRouter);
 app.route("/api/workflow", workflowRouter);
 app.route("/api/portfolio/intelligence", intelligenceRouter);
 app.route("/api/portfolio/balance", portfolioBalanceRouter);
+app.route("/api/trade-plan", tradePlanRouter);
 
 // ── Portfolio summary (P&L in GBP) ─────────────────────────
 import { handlePortfolioSummary, handlePortfolioSummaryHtml } from "./routes/portfolio.tsx";
