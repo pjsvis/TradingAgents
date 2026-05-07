@@ -58,9 +58,9 @@ t:  # td — task management
     @just --list --group td
 
 [group("nav")]
-db:  # Database — backup, restore, maintenance
+db:  # Database — backup, stats, maintenance
     @echo ""
-    @echo "=== Database: backup, restore, maintenance ==="
+    @echo "=== Database: backup, stats, maintenance ==="
     @echo ""
     @just --list --group db
 
@@ -296,6 +296,37 @@ backups-list:
 [group("db")]
 backups-prune DAYS="30":
     bun scripts/db-backup.ts --prune {{DAYS}}
+
+# Show which database is currently active (LIVE vs TEST)
+[group("db")]
+db-active:
+    @echo "=== Active Database ==="
+    @if [ -n "$$TEST_MODE" ] && [ "$$TEST_MODE" = "1" ]; then \
+        echo "MODE: TEST"; \
+        echo "DB:   $$TEST_PORTFOLIO_DB (default: ./test_portfolio.db)"; \
+    else \
+        echo "MODE: LIVE"; \
+        echo "DB:   $$PORTFOLIO_DB (default: ./portfolio.db)"; \
+    fi
+
+# Show row counts for LIVE database
+[group("db")]
+db-stats:
+    @echo "=== LIVE portfolio.db ==="
+    @sqlite3 portfolio.db "SELECT 'positions', COUNT(*) FROM positions UNION ALL SELECT 'signals', COUNT(*) FROM signals UNION ALL SELECT 'analyses', COUNT(*) FROM analyses UNION ALL SELECT 'watchlist', COUNT(*) FROM watchlist UNION ALL SELECT 'prices', COUNT(*) FROM prices UNION ALL SELECT 'accounts', COUNT(*) FROM accounts UNION ALL SELECT 'trades', COUNT(*) FROM trades" 2>/dev/null || echo "portfolio.db not found"
+
+# Show row counts for TEST database
+[group("db")]
+db-stats-test:
+    @echo "=== TEST test_portfolio.db ==="
+    @sqlite3 test_portfolio.db "SELECT 'positions', COUNT(*) FROM positions UNION ALL SELECT 'signals', COUNT(*) FROM signals UNION ALL SELECT 'analyses', COUNT(*) FROM analyses UNION ALL SELECT 'watchlist', COUNT(*) FROM watchlist UNION ALL SELECT 'prices', COUNT(*) FROM prices UNION ALL SELECT 'accounts', COUNT(*) FROM accounts UNION ALL SELECT 'trades', COUNT(*) FROM trades" 2>/dev/null || echo "test_portfolio.db not found"
+
+# Reset TEST database (destroy and recreate)
+[group("db")]
+db-reset-test:
+    @echo "⚠️  Resetting test_portfolio.db..."
+    TEST_MODE=1 bash scripts/init-test-db.sh --reset
+    @echo "✅ TEST database reset. Run: just seed-db-test"
 
 # ── Seed: database seeding variants ────────────────────────────────────────
 #   Partial seeding for focused reset. Less frequently used than run recipes.
