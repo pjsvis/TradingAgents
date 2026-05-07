@@ -55,7 +55,9 @@ violates Content Security Policy directive: "default-src 'none'".
 
 This is an architectural impossibility: a remote web app cannot connect to a local server when CSP forbids it. No workaround without modifying Vercel's CSP headers (not possible for users).
 
-**Verdict:** Do not use `serve`. The CLI (`context`, `impact`, `cypher`) gives you everything you need. If you want a visual graph, use KuzuDB Explorer directly on `.gitnexus/lbug` or export Cypher results to a visualisation tool.
+**Verdict:** Do not use `serve`. The CLI (`context`, `impact`, `cypher`) gives you everything you need.
+
+**Alternative for visualisation:** Use `scripts/gitnexus-to-dot.ts` to export a subgraph to Graphviz DOT format, then render to SVG/PNG locally. See `playbooks/gitnexus-usage-guide.md` for details.
 
 ---
 

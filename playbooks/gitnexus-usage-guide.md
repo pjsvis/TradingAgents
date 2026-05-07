@@ -210,12 +210,56 @@ grep -r "ig\|ajbell\|aviva\|nsandi" cli/trading server/routes tests/ \
 
 ---
 
+## Visualisation with Graphviz
+
+Since `gitnexus serve` is broken, use `scripts/gitnexus-to-dot.ts` to export subgraphs to Graphviz DOT format and render them locally.
+
+### Symbol Impact Graph
+
+```bash
+# See what calls and is called by calculateTradePlan
+bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
+# → graph.dot, graph.svg, graph.png
+```
+
+### Module Graph
+
+```bash
+# See all symbols and their relationships within a file
+bun scripts/gitnexus-to-dot.ts --file cli/trading/commands/plan.ts --render --output plan.dot
+# → plan.dot, plan.svg, plan.png
+```
+
+### Deeper Traversal
+
+```bash
+# 2-level impact analysis (can get large — use --max-nodes)
+bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render --max-nodes 50
+```
+
+### Colour Coding
+
+| Node Type | Colour |
+|-----------|--------|
+| Function | Blue `#4a90d9` |
+| Class | Orange `#e8a838` |
+| Method | Purple `#c990e8` |
+| Interface | Green `#50c878` |
+| File | Grey `#f5f5f5` |
+| Route | Red `#ff6b6b` |
+| Process | Violet `#9b59b6` |
+
+**Requirements:** `gitnexus` (CLI) and `dot` (Graphviz). Already installed.
+
+---
+
 ## What NOT to Use
 
 | Command | Status | Why |
 |---------|--------|-----|
 | `gitnexus query` | ❌ Broken | FTS index segfaults in LadybugDB. Use `grep` or Cypher instead. |
 | `gitnexus serve` | ❌ Broken | CSP on gitnexus.vercel.app blocks localhost. Impossible to fix from user side. |
+| `gitnexus-to-dot.ts` | ✅ Working | Export subgraph to Graphviz DOT → SVG/PNG. See Visualisation below. |
 
 ---
 
@@ -241,6 +285,8 @@ grep -r "ig\|ajbell\|aviva\|nsandi" cli/trading server/routes tests/ \
 | What did my changes touch? | `just gn-changes` |
 | Re-index the repo | `just gn-analyze` |
 | Custom graph query | `gitnexus cypher "MATCH ..."` |
+| Visualise impact graph | `bun scripts/gitnexus-to-dot.ts --symbol X --render` |
+| Visualise module graph | `bun scripts/gitnexus-to-dot.ts --file X.ts --render` |
 | Index status | `just gn-status` |
 
 ---
