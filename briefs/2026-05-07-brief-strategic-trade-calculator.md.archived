@@ -1,0 +1,51 @@
+This makes perfect sense and is precisely how professional desks transition from research to execution. You are essentially asking for a **Trade Execution Architecture** that converts raw market data into a "Bracket Order" plan (an entry paired with a profit-taker and a protective stop).
+
+Below is a brief you can provide to a coding agent. It breaks the project into logical modules based on the research provided.
+
+### **Coding Agent Brief: Strategic Trade Calculator & Order Architect**
+
+**Objective:**
+Develop a Python-based tool (or set of scripts) that takes a stock ticker and user account parameters as input and generates a complete trade execution plan. The plan must include a volatility-adjusted entry, technical profit targets, and a risk-managed stop loss based on institutional heuristics.
+
+---
+
+#### **Module 1: Data Acquisition (Input)**
+The agent must use a financial API (e.g., `yfinance`, `Alpha Vantage`) to pull:
+*   **Historical Price Data:** Last 22–50 days (for ATR and trend analysis). [1]
+*   **Fundamental Metrics:** Current P/E, EPS, and 5-year growth estimates (for baseline valuation). [2, 3]
+*   **User Parameters:** Account Balance (e.g., $50,000) and Risk-per-Trade (default 1%–2%).
+
+#### **Module 2: The Valuation & Entry Engine**
+The script should calculate a "Buy Zone" using two methods:
+1.  **Fundamental Floor:** Calculate a simplified "back-of-the-envelope" DCF or Residual Income Model (RIM) value to ensure the entry is not above intrinsic "fair value."
+2.  **Technical Trigger:** Identify the "Point B" (recent swing high) and "Point C" (current retracement). Entry should be triggered upon a breakout of the consolidation or a bounce off the 50-day EMA. [4, 5]
+
+#### **Module 3: The Exit & Target Engine (Heuristics)**
+The script must generate three specific exit values:
+1.  **Stop Loss (Volatility-Based):** 
+    *   Calculate the 14-day **Average True Range (ATR)**. [1, 6]
+    *   Set the Initial Stop at `Entry - (2.0 x ATR)` for swing trades. [3, 7]
+2.  **Profit Target 1 (Conservative):** The 138.2% Fibonacci extension of the AB move. [4]
+3.  **Profit Target 2 (Institutional):** The 161.8% Fibonacci extension ("Golden Ratio") or a target that achieves a minimum **1:2 Risk-Reward ratio**.
+
+#### **Module 4: Risk & Position Sizing Logic**
+Apply the **2% Rule** to ensure the user never loses more than their specified risk tolerance.
+*   **Formula:** `Position Size (Shares) = (Account Balance * 0.02) / (Entry Price - Stop Loss Price)`.
+*   **Safety Check:** If the calculated position size exceeds 5% of the total portfolio value, flag it for "Concentration Risk." [8]
+
+#### **Module 5: Execution Output (The "Bracket Order")**
+The script should output a JSON or CLI-formatted table ready for manual entry or API submission (e.g., to Interactive Brokers):
+*   **Parent Order:** BUY [Quantity] @ [Entry Price] (Limit Order). [9]
+*   **Profit Taker:** SELL [Quantity] @ (Limit Order - GTC). [9, 10]
+*   **Stop Loss:** SELL [Quantity] @ (Stop-Limit Order with a 10% buffer). [11, 12]
+*   **Scaling Logic:** Optionally suggest selling 50% at Target 1 and moving the stop for the remainder to "Break-Even." [13, 14, 15]
+
+---
+
+### **Implementation Logic for the Agent**
+*   **Volatility handling:** Ensure the `n` for ATR is configurable (14 days is standard). [1]
+*   **Tax Efficiency (UK):** If the user is UK-based, add a flag to suggest using a **Stocks and Shares ISA** wrapper to protect the calculated 7%+ gains from capital gains tax. [16, 17]
+*   **Psychology Check:** Include a "Pre-mortem" prompt: "Are you prepared to lose $ if this trade hits the stop loss?"
+
+### **Why this makes sense:**
+By codifying these rules, you eliminate **Recency Bias** and **Loss Aversion** (the urge to "hope" for a recovery). [18, 19] The script provides the "math and the mob" (Fibonacci and ATR) and forces you to respect the **3-5-7 Rule** of portfolio defense. You are no longer "guessing" a price; you are executing a mathematically derived range.

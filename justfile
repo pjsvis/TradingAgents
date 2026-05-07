@@ -58,6 +58,13 @@ t:  # td — task management
     @just --list --group td
 
 [group("nav")]
+db:  # Database — backup, restore, maintenance
+    @echo ""
+    @echo "=== Database: backup, restore, maintenance ==="
+    @echo ""
+    @just --list --group db
+
+[group("nav")]
 m:  # Meta — project info, help, state
     @echo ""
     @echo "=== Meta: project info, help, state ==="
@@ -181,6 +188,16 @@ summarize-all:
 test-smoke:
     uv run pytest tests/ -v
 
+# Run trade calculator unit tests
+[group("bun")]
+test-trade-calc:
+    bun test tests/trade-calculator.test.ts
+
+# Run trade calculator integration tests (real price data)
+[group("bun")]
+test-trade-calc-integration:
+    bun test tests/trade-calculator-integration.test.ts
+
 # Quick smoke test for structured output (openai, google, anthropic, deepseek)
 [group("python")]
 test-quick PROVIDER="openai":
@@ -255,7 +272,30 @@ seed-db:
 # Unified trading CLI — generate trade plan for a ticker
 [group("run")]
 trading TICKER:
-    bun cli/trading/main.ts plan {{TICKER}} --platform ig --account 50000 --risk 0.02
+    bun run trading plan {{TICKER}} --platform ig --account 50000 --risk 0.02
+
+# ── Database ───────────────────────────────────────────────────────────────
+#   Backup, restore, and maintenance.
+
+# Backup portfolio.db (timestamped copy in backups/)
+[group("db")]
+backup:
+    bun scripts/db-backup.ts
+
+# Backup test_portfolio.db
+[group("db")]
+backup-test:
+    bun scripts/db-backup.ts --test
+
+# List existing backups
+[group("db")]
+backups-list:
+    bun scripts/db-backup.ts --list
+
+# Prune backups older than N days (default: 30)
+[group("db")]
+backups-prune DAYS="30":
+    bun scripts/db-backup.ts --prune {{DAYS}}
 
 # ── Seed: database seeding variants ────────────────────────────────────────
 #   Partial seeding for focused reset. Less frequently used than run recipes.

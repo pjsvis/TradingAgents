@@ -45,6 +45,18 @@ Set up an IG demo account and use the IG REST API to place test trades. Compare 
 
 ---
 
+## Task Assignments
+
+| Story | Assigned To | Status |
+|-------|-------------|--------|
+| S01 | **User** | ✅ Done — demo account created |
+| S02 | **User** | 🔄 Open — connectivity config (auth, endpoints, rate limits) |
+| S03 | **Agent** | ⏳ Open — test trade placement |
+| S04 | **Agent** | ⏳ Open — calculator validation vs. IG actuals |
+| S05 | **Agent** | ⏳ Open — order placement guide |
+
+---
+
 ## Stories
 
 ### IG-API-001-S01: Demo Account Setup
@@ -63,6 +75,44 @@ Set up an IG demo account and use the IG REST API to place test trades. Compare 
 - Credentials stored in `.env` as `IG_API_KEY`, `IG_USERNAME`, `IG_PASSWORD`
 
 **Estimate:** 0.5d
+
+---
+
+### IG-API-001-S02: Connectivity Config (User Task)
+
+**Assigned to:** User  
+**Status:** 🔄 Open  
+**Purpose:** Define the connectivity configuration for the IG REST API.
+
+**What the user needs to provide:**
+
+1. **API Endpoint Confirmation**
+   - Demo base URL: `https://demo-api.ig.com/gateway/deal` ✅ (already stored in .env)
+   - Confirm this is correct for the user's region (UK)
+
+2. **Authentication Flow**
+   - IG uses CST + XST tokens obtained via `POST /session`
+   - Tokens expire — define refresh policy (e.g., every 23 hours)
+   - Document whether 2FA is required on the demo account
+
+3. **Rate Limits**
+   - Confirm actual rate limits for the demo account
+   - Define backoff strategy for 429 responses
+   - Document which endpoints are most restrictive
+
+4. **Account Selection**
+   - Demo accounts may have multiple sub-accounts (spread bet, CFD, share dealing)
+   - Document which account type to use for testing
+
+5. **Instrument EPICs**
+   - IG uses EPIC codes (e.g., `CS.D.AAPL.CFD.IP` for AAPL CFD)
+   - Document how to map our ticker symbols to IG EPICs
+   - Provide a mapping table for common tickers: AAPL, TSLA, TKA.DE, etc.
+
+**Acceptance:**
+- User provides a `docs/ig-connectivity-config.md` with the above
+- Agent can authenticate successfully using provided credentials
+- Agent can call `GET /accounts` and receive account list
 
 ---
 
