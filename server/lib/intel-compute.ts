@@ -30,21 +30,36 @@ export async function computePortfolioIntelligence(): Promise<PortfolioIntel> {
 
   const db = DatabaseFactory.get()
 
-  // 1. Fetch accounts
-  const accounts = db.query("SELECT * FROM accounts").all() as DbAccount[]
+  // 1. Fetch accounts (parseFloat on REAL columns — SQLite returns strings)
+  const rawAccounts = db.query("SELECT * FROM accounts").all() as DbAccount[]
+  const accounts = rawAccounts.map((a) => ({ ...a, balance: parseFloat(String(a.balance)) }))
   const accountsById = new Map<string, DbAccount>(accounts.map((a) => [a.id, a]))
 
-  // 2. Fetch positions with account linkage
-  const dbPositions = db
+  // 2. Fetch positions with account linkage (parseFloat on REAL columns)
+  const rawPositions = db
     .query(
       "SELECT id, ticker, exchange, platform, account_id, quantity, avg_cost, entry_date, thesis FROM positions WHERE status = 'open'",
     )
     .all() as DbPosition[]
+  const dbPositions = rawPositions.map((p) => ({
+    ...p,
+    quantity: parseFloat(String(p.quantity)),
+    avg_cost: parseFloat(String(p.avg_cost)),
+  }))
 
-  // 3. Fetch spread bet positions
-  const dbBets = db
+  // 3. Fetch spread bet positions (parseFloat on REAL columns)
+  const rawBets = db
     .query("SELECT * FROM spreadbet_positions WHERE status = 'open'")
     .all() as DbSpreadBet[]
+  const dbBets = rawBets.map((b) => ({
+    ...b,
+    stake_per_point: parseFloat(String(b.stake_per_point)),
+    entry_price: parseFloat(String(b.entry_price)),
+    stop_price: b.stop_price != null ? parseFloat(String(b.stop_price)) : null,
+    target_price: b.target_price != null ? parseFloat(String(b.target_price)) : null,
+    current_price: b.current_price != null ? parseFloat(String(b.current_price)) : null,
+    pnl_gbp: b.pnl_gbp != null ? parseFloat(String(b.pnl_gbp)) : null,
+  }))
 
   // 4. Fetch research queue
   const researchQueue = db
@@ -197,7 +212,7 @@ export async function computePortfolioIntelligence(): Promise<PortfolioIntel> {
 
   // Assign positions to accounts
   for (const p of positionsWithValue) {
-    const accountId = p.account_id ?? (p.platform === "test" ? "ig-isa" : "ig-shares")
+    const accountId = p.account_id ?? platformToAccountId[p.platform] ?? "ig-shares"
     const av = accountValues.get(accountId)
     if (av) {
       av.deployed_gbp += p.current_value_gbp ?? p.cost_value_gbp
@@ -228,9 +243,15 @@ export async function computePortfolioIntelligence(): Promise<PortfolioIntel> {
   const absPortfolioGbp = Math.abs(totalDeployedGbp + totalSpreadBetGbp + cashGbp)
   const totalPortfolioGbp = totalDeployedGbp + totalSpreadBetGbp + cashGbp
 
-  const cashPct = absPortfolioGbp > 0 ? (cashGbp / absPortfolioGbp) * 100 : 0
-  const deployedPct = absPortfolioGbp > 0 ? (totalDeployedGbp / absPortfolioGbp) * 100 : 0
-  const spreadBetPct = absPortfolioGbp > 0 ? (totalSpreadBetGbp / absPortfolioGbp) * 100 : 0
+  const cashPct = Math.max(0, absPortfolioGbp > 0 ? (cashGbp / absPortfolioGbp) * 100 : 0)
+  const deployedPct = Math.max(
+    0,
+    absPortfolioGbp > 0 ? (totalDeployedGbp / absPortfolioGbp) * 100 : 0,
+  )
+  const spreadBetPct = Math.max(
+    0,
+    absPortfolioGbp > 0 ? (totalSpreadBetGbp / absPortfolioGbp) * 100 : 0,
+  )
 
   // ── Allocation bar ───────────────────────────────────────────────────────
   const allocationBar: AllocationBar = {

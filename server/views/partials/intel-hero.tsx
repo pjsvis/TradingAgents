@@ -8,19 +8,19 @@ export function IntelHero({ data }: { data: PortfolioIntel }) {
     <>
       {data.cash_negative && (
         <div class="banner" style="margin-bottom:1rem">
-          \u26a0\ufe0f hledger cash is negative — more sells recorded than buys in journal.
+          ⚠️ hledger cash is negative — more sells recorded than buys in journal.
           Total and % figures may be misleading until hledger cash is corrected.
         </div>
       )}
       <div class="intel-hero">
         <div class="intel-stat">
           <div class="intel-label">Total Portfolio</div>
-          <div class="intel-value">\u00a3{fmtCommas(data.total_value_gbp)}</div>
+          <div class="intel-value">£{fmtCommas(data.total_value_gbp)}</div>
         </div>
         <div class="intel-stat">
           <div class="intel-label">Cash</div>
           <div class={`intel-value${data.cash_negative ? " negative" : ""}`}>
-            \u00a3{fmtCommas(data.cash_gbp)}
+            £{fmtCommas(data.cash_gbp)}
             <span class="intel-pct"> ({fmtCommas(data.cash_pct_raw)}%)</span>
           </div>
         </div>
@@ -30,7 +30,7 @@ export function IntelHero({ data }: { data: PortfolioIntel }) {
         </div>
         <div class="intel-stat">
           <div class="intel-label">Live Value</div>
-          <div class="intel-value">\u00a3{fmtCommas(data.position_value_gbp)}</div>
+          <div class="intel-value">£{fmtCommas(data.position_value_gbp)}</div>
         </div>
       </div>
       <div class="intel-fx">

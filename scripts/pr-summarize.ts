@@ -137,11 +137,11 @@ async function main() {
     const outFile = prFile
     const existing = await Bun.file(outFile).text()
     const combined = `${checklist}\n\n${existing}`
-    Bun.write(outFile, combined)
+    await Bun.write(outFile, combined)
     console.log(`Prepended checklist to ${outFile}`)
   } else if (outputArg) {
     const outFile = join(process.cwd(), "debriefs", "reviews", outputArg)
-    Bun.write(outFile, checklist)
+    await Bun.write(outFile, checklist)
     console.log(`Wrote: ${outFile}`)
   } else {
     console.log(checklist)

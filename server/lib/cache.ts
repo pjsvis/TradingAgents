@@ -21,7 +21,10 @@ export function endOfToday(): number {
  * Key: ticker. Value: { price, expires }
  * Expires at midnight UTC — one fetch per ticker per calendar day.
  */
-export const priceCache = new Map<string, { price: number | null; expires: number }>()
+export const priceCache = new Map<
+  string,
+  { price: number | null; currency?: string; expires: number }
+>()
 
 /**
  * Fetch a single ticker price, using cache if available.

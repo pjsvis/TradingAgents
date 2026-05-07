@@ -8,7 +8,7 @@ async function fetchPriceForTicker(ticker: string): Promise<PriceResult> {
   const now = Date.now()
   const cached = priceCache.get(ticker)
   if (cached && cached.expires > now && cached.price !== null) {
-    return { price: cached.price, currency: "USD" }
+    return { price: cached.price, currency: cached.currency ?? "USD" }
   }
 
   return new Promise((resolve) => {
@@ -25,7 +25,11 @@ async function fetchPriceForTicker(ticker: string): Promise<PriceResult> {
       try {
         const data = JSON.parse(stdout.trim())
         if (data.price != null) {
-          priceCache.set(ticker, { price: data.price, expires: endOfToday() })
+          priceCache.set(ticker, {
+            price: data.price,
+            currency: data.currency,
+            expires: endOfToday(),
+          })
         }
         resolve({ price: data.price ?? null, currency: data.currency ?? "USD" })
       } catch {
