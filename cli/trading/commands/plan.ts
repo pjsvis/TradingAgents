@@ -2,6 +2,7 @@ import { defineCommand } from "citty"
 import { DatabaseFactory } from "../../../server/lib/db.ts"
 import { calculateTradePlan, type PriceBar } from "../../../server/lib/trade-calculator.ts"
 import { accountArg, entryArg, modeArg, platformArg, riskArg, tickerArg } from "../lib/args.ts"
+import { getIGInstrument, validateIGPlan } from "../lib/ig-instruments.ts"
 import { getPlatform, type TradeMode, validateMode } from "../lib/platforms.ts"
 
 // ── Types ───────────────────────────────────────────────────────────────────
@@ -127,6 +128,8 @@ function renderSpreadBet(
   const margin = notional * platform.marginFactor
   const overnight = (notional * platform.overnightRate) / 365
 
+  const marginWarning = platform.marginIsEstimate ? " (estimate — verify with IG)" : ""
+
   console.log(`┌─────────────────┬────────────────────────────────────┐`)
   console.log(`│ Ticker          │ ${plan.ticker.padEnd(34)} │`)
   console.log(`│ Mode            │ ${"Spread Bet".padEnd(34)} │`)
@@ -139,7 +142,9 @@ function renderSpreadBet(
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Stake           │ £${fmt(stake).padEnd(32)} / point │`)
   console.log(`│ Notional        │ £${fmt(notional).padEnd(32)} │`)
-  console.log(`│ Margin Required │ £${fmt(margin).padEnd(32)} │`)
+  console.log(
+    `│ Margin Required │ £${fmt(margin).padEnd(32)}${marginWarning.padEnd(Math.max(0, 32 - marginWarning.length))} │`,
+  )
   console.log(`│ Overnight Fin.  │ ~£${fmt(overnight).padEnd(31)} / day │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Risk Amount     │ £${fmt(riskAmount).padEnd(32)} │`)
@@ -223,7 +228,15 @@ export const planCommand = defineCommand({
       renderShares(plan)
     }
 
-    // 7. Warnings
+    // 7. IG instrument validation
+    if (platformName === "ig") {
+      const igValidation = validateIGPlan(plan, mode)
+      for (const warning of igValidation.warnings) {
+        console.warn(warning)
+      }
+    }
+
+    // 8. Generic warnings
     if (plan.concentrationFlag) {
       console.warn(`⚠️  Warning: Position exceeds 5% of portfolio`)
     }
@@ -231,6 +244,18 @@ export const planCommand = defineCommand({
       console.warn(
         `⚠️  Warning: Less than 22 days of price history — calculations may be unreliable`,
       )
+    }
+
+    // 9. Instrument notes
+    if (platformName === "ig") {
+      const instrument = getIGInstrument(plan.ticker)
+      if (instrument && instrument.notes.length > 0) {
+        console.log(``)
+        console.log(`Notes:`)
+        for (const note of instrument.notes) {
+          console.log(`  • ${note}`)
+        }
+      }
     }
   },
 })

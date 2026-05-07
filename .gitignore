@@ -244,3 +244,8 @@ test_portfolio.db
 # Archived and backup files
 *.archived
 *.backup
+.gitnexus
+# GitNexus generated files
+.claude/skills/gitnexus/
+CLAUDE.md
+AGENTS.md

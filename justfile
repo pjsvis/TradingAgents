@@ -446,5 +446,51 @@ pr-fetch-all:  # fetch all open PRs as markdown
 pr-summarize NUM:  # summarize cached PR #NUM via LLM, prepend to file
     bun scripts/pr-summarize.ts {{NUM}} --write
 
+# ── GitNexus: code knowledge graph ──────────────────────────────────────
+#   Structural analysis via the indexed knowledge graph.
+#   See: playbooks/gitnexus-playbook.md
+
+# 360-degree view of a symbol: callers, callees, processes
+[group("gn")]
+gn-context SYM:
+    gitnexus context "{{SYM}}" --repo TradingAgents
+
+# Blast radius: what breaks if you change a symbol
+[group("gn")]
+gn-impact SYM DIRECTION="upstream":
+    gitnexus impact "{{SYM}}" --direction {{DIRECTION}} --repo TradingAgents
+
+# Map uncommitted changes to affected symbols and flows
+[group("gn")]
+gn-changes SCOPE="unstaged":
+    gitnexus detect-changes --scope {{SCOPE}} --repo TradingAgents
+
+# Raw Cypher query against the knowledge graph
+[group("gn")]
+gn-cypher QUERY:
+    gitnexus cypher "{{QUERY}}" --repo TradingAgents
+
+# Re-index the repo (run after significant code changes)
+[group("gn")]
+gn-analyze:
+    gitnexus analyze --force .
+
+# Start local server for web UI graph browser (port 4747)
+[group("gn")]
+gn-serve:
+    gitnexus serve
+
+# Show index status
+[group("gn")]
+gn-status:
+    gitnexus list
+
+[group("nav")]
+gn:  # GitNexus — code knowledge graph
+    @echo ""
+    @echo "=== GitNexus: code knowledge graph ==="
+    @echo ""
+    @just --list --group gn
+
 alias a := analyze
 alias l := lint

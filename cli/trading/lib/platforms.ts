@@ -21,6 +21,7 @@ export interface PlatformConfig {
   commission?: number
   stampDuty: number
   marginFactor?: number
+  marginIsEstimate?: boolean // true if margin is a generic fallback
   overnightRate?: number
   accessNote: string
   taxNote: string
@@ -60,6 +61,7 @@ export const PLATFORMS: Record<PlatformName, PlatformConfig> = {
     commission: 0,
     stampDuty: 0,
     marginFactor: 0.05,
+    marginIsEstimate: true,
     overnightRate: 0.025,
     accessNote: "No pension wrapper. ISA for tax-free gains.",
     taxNote: "CGT outside ISA. Spread betting currently CGT-free.",
