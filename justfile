@@ -25,6 +25,9 @@ set shell := ["bash", "-o", "pipefail", "-c"]
 set positional-arguments := true
 set dotenv-load := true
 
+# ── Modules ────────────────────────────────────────────────────────────────
+mod hledger
+
 # Group navigation shortcuts — just <letter> to list that group's recipes
 [group("nav")]
 b:  # Bun — TypeScript server tooling
@@ -45,7 +48,7 @@ h:  # hLedger — plain-text accounting
     @echo ""
     @echo "=== hLedger: plain-text accounting ==="
     @echo ""
-    @just --list --group hledger
+    @just --list hledger
 
 [group("nav")]
 t:  # td — task management
@@ -95,6 +98,14 @@ pr:  # PR — GitHub pull request helpers
     @echo "=== PR: GitHub pull request helpers ==="
     @echo ""
     @just --list --group pr
+
+# Aliases for common hledger recipes (backward compat)
+alias hl := hledger::hl
+alias hl-cash := hledger::hl-cash
+alias hl-holdings := hledger::hl-holdings
+alias hl-prices := hledger::hl-prices
+alias hl-register := hledger::hl-register
+alias hl-net-worth := hledger::hl-net-worth
 
 # Type-check + lint + custom gates
 [group("bun")]
@@ -241,6 +252,11 @@ sync-prices-ticker:
 seed-db:
     bun scripts/seed_database.ts
 
+# Unified trading CLI — generate trade plan for a ticker
+[group("run")]
+trading TICKER:
+    bun cli/trading/main.ts plan {{TICKER}} --platform ig --account 50000 --risk 0.02
+
 # ── Seed: database seeding variants ────────────────────────────────────────
 #   Partial seeding for focused reset. Less frequently used than run recipes.
 
@@ -328,66 +344,6 @@ diagrams:
 diagrams-clean:
     rm -f docs/diagrams/*.svg
     @echo "Cleaned SVG files."
-
-# Holdings summary with market values
-[group("hledger")]
-hl:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" balance --tree --value end
-
-# Holdings only (excludes cash)
-[group("hledger")]
-hl-holdings:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" balance assets: --tree
-
-# Cash balances per platform
-[group("hledger")]
-hl-cash:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" balance assets: --tree | grep -E "(cash|EUR|USD)"
-
-# All accounts defined in journal
-[group("hledger")]
-hl-accounts:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" accounts
-
-# Backup hledger journal
-[group("hledger")]
-hl-backup:
-    ~/.tradingagents/bin/backup-hledger.sh
-
-# Verify latest backup integrity
-[group("hledger")]
-hl-backup-verify:
-    ~/.tradingagents/bin/backup-hledger.sh --verify
-
-# Restore hledger from a backup
-[group("hledger")]
-hl-backup-restore FILE:
-    ~/.tradingagents/bin/backup-hledger.sh --restore {{FILE}}
-
-# Price history
-[group("hledger")]
-hl-prices:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" prices
-
-# Fetch latest prices from Yahoo Finance
-[group("hledger")]
-hl-update-prices:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" prices --auto
-
-# Allocation tree by account
-[group("hledger")]
-hl-allocation:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" balance --tree --value end --depth 3
-
-# Transaction history for a ticker
-[group("hledger")]
-hl-register TICKER:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" reg {{TICKER}}
-
-# Net worth over time
-[group("hledger")]
-hl-net-worth:
-    hledger -f "${HLEDGER_FILE:-~/.hledger.journal}" balance --tree --equity --monthly
 
 # ── PR review cache ─────────────────────────────────────────
 # Persist PR reviews as markdown in debriefs/reviews/ for offline review.
