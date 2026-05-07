@@ -1,47 +1,20 @@
-#!/usr/bin/env bun
-/**
- * Command: trading plan <ticker>
- *
- * Generate a platform-aware trade plan with bracket order details.
- */
-
+import { defineCommand } from "citty"
 import { DatabaseFactory } from "../../../server/lib/db.ts"
 import { calculateTradePlan, type PriceBar } from "../../../server/lib/trade-calculator.ts"
 import { getPlatform, type TradeMode, validateMode } from "../lib/platforms.ts"
 
-interface PlanArgs {
-  ticker: string
-  platform: string
-  mode: TradeMode
-  account: number
-  risk: number
-  entry?: number
+// ── Types ───────────────────────────────────────────────────────────────────
+
+interface PriceRow {
+  date: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
 }
 
-function parseArgs(argv: string[]): PlanArgs {
-  const ticker = argv[0]
-  if (!ticker || ticker.startsWith("--")) {
-    throw new Error(
-      "Usage: trading plan <TICKER> --platform <name> [--mode shares|spreadbet] [--account N] [--risk N] [--entry N]",
-    )
-  }
-
-  let platform = "ig"
-  let mode: TradeMode = "shares"
-  let account = 50000
-  let risk = 0.02
-  let entry: number | undefined
-
-  for (let i = 1; i < argv.length; i++) {
-    if (argv[i] === "--platform" && argv[i + 1]) platform = argv[++i]
-    if (argv[i] === "--mode" && argv[i + 1]) mode = argv[++i] as TradeMode
-    if (argv[i] === "--account" && argv[i + 1]) account = parseFloat(argv[++i])
-    if (argv[i] === "--risk" && argv[i + 1]) risk = parseFloat(argv[++i])
-    if (argv[i] === "--entry" && argv[i + 1]) entry = parseFloat(argv[++i])
-  }
-
-  return { ticker, platform, mode, account, risk, entry }
-}
+// ── Data fetching ───────────────────────────────────────────────────────────
 
 function fetchPriceHistory(ticker: string): PriceBar[] {
   const dbPath = process.env.PORTFOLIO_DB ?? "./portfolio.db"
@@ -78,16 +51,22 @@ function fetchPriceHistory(ticker: string): PriceBar[] {
   }))
 }
 
-function formatCurrency(n: number): string {
+// ── Formatters ──────────────────────────────────────────────────────────────
+
+function fmt(n: number): string {
   return n.toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-function renderSharesPlan(
-  plan: ReturnType<typeof calculateTradePlan>,
-  platform: ReturnType<typeof getPlatform>,
-): void {
-  if (!platform) return
+function rr(plan: ReturnType<typeof calculateTradePlan>): string {
+  const risk = plan.entry - plan.stopLoss
+  const reward = plan.target2 - plan.entry
+  return risk > 0 ? (reward / risk).toFixed(2) : "—"
+}
 
+// ── Renderers ───────────────────────────────────────────────────────────────
+
+function renderShares(plan: ReturnType<typeof calculateTradePlan>): void {
+  const platform = getPlatform("ig")! // default fallback for shares
   const notional = plan.positionSize * plan.entry
   const stampDuty = notional * platform.stampDuty
   const commission = platform.commission ?? 0
@@ -95,39 +74,29 @@ function renderSharesPlan(
 
   console.log(`┌─────────────────┬────────────────────────────────────┐`)
   console.log(`│ Ticker          │ ${plan.ticker.padEnd(34)} │`)
-  console.log(`│ Platform        │ ${(platform.name + " (" + platform.type + ")").padEnd(34)} │`)
   console.log(`│ Mode            │ ${"Shares".padEnd(34)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Entry           │ $${formatCurrency(plan.entry).padEnd(32)} │`)
-  console.log(`│ Stop Loss       │ $${formatCurrency(plan.stopLoss).padEnd(32)} │`)
-  console.log(`│ Target 1        │ $${formatCurrency(plan.target1).padEnd(32)} │`)
-  console.log(`│ Target 2        │ $${formatCurrency(plan.target2).padEnd(32)} │`)
+  console.log(`│ Entry           │ $${fmt(plan.entry).padEnd(32)} │`)
+  console.log(`│ Stop Loss       │ $${fmt(plan.stopLoss).padEnd(32)} │`)
+  console.log(`│ Target 1        │ $${fmt(plan.target1).padEnd(32)} │`)
+  console.log(`│ Target 2        │ $${fmt(plan.target2).padEnd(32)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Position Size   │ ${(String(plan.positionSize) + " shares").padEnd(34)} │`)
-  console.log(`│ Notional        │ £${formatCurrency(notional).padEnd(32)} │`)
+  console.log(`│ Notional        │ £${fmt(notional).padEnd(32)} │`)
   if (platform.stampDuty > 0) {
-    console.log(`│ Stamp Duty      │ £${formatCurrency(stampDuty).padEnd(32)} │`)
+    console.log(`│ Stamp Duty      │ £${fmt(stampDuty).padEnd(32)} │`)
   }
   if (commission > 0) {
-    console.log(`│ Commission      │ £${formatCurrency(commission).padEnd(32)} │`)
+    console.log(`│ Commission      │ £${fmt(commission).padEnd(32)} │`)
   }
-  console.log(`│ Total Cost      │ £${formatCurrency(totalCost).padEnd(32)} │`)
+  console.log(`│ Total Cost      │ £${fmt(totalCost).padEnd(32)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Risk Amount     │ £${formatCurrency(plan.riskAmount).padEnd(32)} │`)
+  console.log(`│ Risk Amount     │ £${fmt(plan.riskAmount).padEnd(32)} │`)
   console.log(
     `│ Risk %          │ ${(String((plan.riskPercent * 100).toFixed(2)) + "% of account").padEnd(34)} │`,
   )
-  console.log(`│ R/R Ratio       │ ${(String(calculateRR(plan)) + ":1").padEnd(34)} │`)
+  console.log(`│ R/R Ratio       │ ${(rr(plan) + ":1").padEnd(34)} │`)
   console.log(`│ ATR (14d)       │ ${String(plan.atr14.toFixed(4)).padEnd(34)} │`)
-  console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ ${"Tax Note".padEnd(15)} │ ${platform.taxNote.padEnd(34)} │`)
-  console.log(`│ ${"Access".padEnd(15)} │ ${platform.accessNote.padEnd(34)} │`)
-  if (plan.concentrationFlag) {
-    console.log(`│ ⚠️  Warning     │ Position exceeds 5% of portfolio   │`)
-  }
-  if (plan.insufficientHistory) {
-    console.log(`│ ⚠️  Warning     │ Insufficient price history         │`)
-  }
   console.log(`└─────────────────┴────────────────────────────────────┘`)
 
   console.log(``)
@@ -142,13 +111,15 @@ function renderSharesPlan(
   console.log(`  → STOP ${plan.positionSize} @ $${plan.stopLoss} (Stop-Limit)`)
 }
 
-function renderSpreadBetPlan(
+function renderSpreadBet(
   plan: ReturnType<typeof calculateTradePlan>,
-  platform: ReturnType<typeof getPlatform>,
+  accountBalance: number,
+  riskPerTrade: number,
 ): void {
-  if (!platform || !platform.marginFactor || !platform.overnightRate) return
+  const platform = getPlatform("ig")!
+  if (!platform.marginFactor || !platform.overnightRate) return
 
-  const riskAmount = plan.accountBalance * plan.riskPerTrade
+  const riskAmount = accountBalance * riskPerTrade
   const stopDistance = plan.entry - plan.stopLoss
   const stake = stopDistance > 0 ? riskAmount / stopDistance : 0
   const notional = stake * plan.entry
@@ -157,80 +128,136 @@ function renderSpreadBetPlan(
 
   console.log(`┌─────────────────┬────────────────────────────────────┐`)
   console.log(`│ Ticker          │ ${plan.ticker.padEnd(34)} │`)
-  console.log(`│ Platform        │ ${(platform.name + " (Spread Bet)").padEnd(34)} │`)
   console.log(`│ Mode            │ ${"Spread Bet".padEnd(34)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Entry           │ $${formatCurrency(plan.entry).padEnd(32)} │`)
-  console.log(`│ Stop Loss       │ $${formatCurrency(plan.stopLoss).padEnd(32)} │`)
+  console.log(`│ Entry           │ $${fmt(plan.entry).padEnd(32)} │`)
+  console.log(`│ Stop Loss       │ $${fmt(plan.stopLoss).padEnd(32)} │`)
   console.log(`│ Stop Distance   │ ${(String(stopDistance.toFixed(2)) + " points").padEnd(34)} │`)
-  console.log(`│ Target 1        │ $${formatCurrency(plan.target1).padEnd(32)} │`)
-  console.log(`│ Target 2        │ $${formatCurrency(plan.target2).padEnd(32)} │`)
+  console.log(`│ Target 1        │ $${fmt(plan.target1).padEnd(32)} │`)
+  console.log(`│ Target 2        │ $${fmt(plan.target2).padEnd(32)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Stake           │ £${formatCurrency(stake).padEnd(32)} / point │`)
-  console.log(`│ Notional        │ £${formatCurrency(notional).padEnd(32)} │`)
-  console.log(`│ Margin Required │ £${formatCurrency(margin).padEnd(32)} │`)
-  console.log(`│ Overnight Fin.  │ ~£${formatCurrency(overnight).padEnd(31)} / day │`)
+  console.log(`│ Stake           │ £${fmt(stake).padEnd(32)} / point │`)
+  console.log(`│ Notional        │ £${fmt(notional).padEnd(32)} │`)
+  console.log(`│ Margin Required │ £${fmt(margin).padEnd(32)} │`)
+  console.log(`│ Overnight Fin.  │ ~£${fmt(overnight).padEnd(31)} / day │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Risk Amount     │ £${formatCurrency(riskAmount).padEnd(32)} │`)
+  console.log(`│ Risk Amount     │ £${fmt(riskAmount).padEnd(32)} │`)
   console.log(
-    `│ Risk %          │ ${(String((plan.riskPerTrade * 100).toFixed(2)) + "% of account").padEnd(34)} │`,
+    `│ Risk %          │ ${(String((riskPerTrade * 100).toFixed(2)) + "% of account").padEnd(34)} │`,
   )
-  console.log(`│ R/R Ratio       │ ${(String(calculateRR(plan)) + ":1").padEnd(34)} │`)
+  console.log(`│ R/R Ratio       │ ${(rr(plan) + ":1").padEnd(34)} │`)
   console.log(`│ ATR (14d)       │ ${String(plan.atr14.toFixed(4)).padEnd(34)} │`)
-  console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ ${"Tax Note".padEnd(15)} │ ${platform.taxNote.padEnd(34)} │`)
-  console.log(`│ ${"Overnight".padEnd(15)} │ Financing applied at market close  │`)
-  if (plan.insufficientHistory) {
-    console.log(`│ ⚠️  Warning     │ Insufficient price history         │`)
-  }
   console.log(`└─────────────────┴────────────────────────────────────┘`)
 
   console.log(``)
   console.log(`Bracket Order:`)
-  console.log(`  OPEN £${formatCurrency(stake)}/pt @ $${plan.entry} (Buy)`)
-  console.log(
-    `  → CLOSE £${formatCurrency(stake)}/pt @ $${plan.target1} (Take Profit)  [50% at T1]`,
-  )
-  console.log(
-    `  → CLOSE £${formatCurrency(stake)}/pt @ $${plan.target2} (Take Profit)  [remainder at T2]`,
-  )
-  console.log(`  → CLOSE £${formatCurrency(stake)}/pt @ $${plan.stopLoss} (Stop Loss)`)
+  console.log(`  OPEN £${fmt(stake)}/pt @ $${plan.entry} (Buy)`)
+  console.log(`  → CLOSE £${fmt(stake)}/pt @ $${plan.target1} (Take Profit)  [50% at T1]`)
+  console.log(`  → CLOSE £${fmt(stake)}/pt @ $${plan.target2} (Take Profit)  [remainder at T2]`)
+  console.log(`  → CLOSE £${fmt(stake)}/pt @ $${plan.stopLoss} (Stop Loss)`)
 }
 
-function calculateRR(plan: ReturnType<typeof calculateTradePlan>): string {
-  const risk = plan.entry - plan.stopLoss
-  const reward = plan.target2 - plan.entry
-  return risk > 0 ? (reward / risk).toFixed(2) : "—"
-}
+// ── Command ─────────────────────────────────────────────────────────────────
 
-export function planCommand(argv: string[]): void {
-  const args = parseArgs(argv)
-  const platform = getPlatform(args.platform)
+export const planCommand = defineCommand({
+  meta: {
+    name: "plan",
+    description: "Generate a trade plan for a ticker",
+  },
+  args: {
+    ticker: {
+      type: "positional",
+      description: "Stock ticker symbol (e.g., AAPL, TKA.DE)",
+      required: true,
+    },
+    platform: {
+      type: "string",
+      description: "Platform (ajbell, aviva, ig, nsandi)",
+      alias: "p",
+      default: "ig",
+    },
+    mode: {
+      type: "string",
+      description: "Trade mode (shares, spreadbet)",
+      alias: "m",
+      default: "shares",
+    },
+    account: {
+      type: "string",
+      description: "Account balance in GBP",
+      alias: "a",
+      default: "50000",
+    },
+    risk: {
+      type: "string",
+      description: "Risk per trade as decimal (e.g., 0.02 for 2%)",
+      alias: "r",
+      default: "0.02",
+    },
+    entry: {
+      type: "string",
+      description: "Manual entry price override",
+      alias: "e",
+    },
+  },
+  run({ args }) {
+    // 1. Extract
+    const ticker = args.ticker
+    const platformName = args.platform ?? "ig"
+    const mode = (args.mode ?? "shares") as TradeMode
+    const accountBalance = parseFloat(args.account ?? "50000")
+    const riskPerTrade = parseFloat(args.risk ?? "0.02")
+    const entryPrice = args.entry ? parseFloat(args.entry) : undefined
 
-  if (!platform) {
-    throw new Error(`Unknown platform: ${args.platform}. Known: ajbell, aviva, ig, nsandi`)
-  }
+    // 2. Validate platform
+    const platform = getPlatform(platformName)
+    if (!platform) {
+      console.error(
+        `❌ Error: Unknown platform "${platformName}". Available: ajbell, aviva, ig, nsandi`,
+      )
+      process.exit(1)
+    }
 
-  const validation = validateMode(args.platform, args.mode)
-  if (!validation.ok) {
-    throw new Error(validation.error!)
-  }
+    // 3. Validate mode
+    const validation = validateMode(platformName, mode)
+    if (!validation.ok) {
+      console.error(`❌ Error: ${validation.error}`)
+      process.exit(1)
+    }
 
-  const history = fetchPriceHistory(args.ticker)
-  const plan = calculateTradePlan({
-    ticker: args.ticker,
-    priceHistory: history,
-    accountBalance: args.account,
-    riskPerTrade: args.risk,
-    entryPrice: args.entry,
-  })
+    // 4. Fetch data
+    let history: PriceBar[]
+    try {
+      history = fetchPriceHistory(ticker)
+    } catch (e) {
+      console.error(`❌ Error: ${e instanceof Error ? e.message : String(e)}`)
+      process.exit(1)
+    }
 
-  // Inject account/risk into plan for spread bet calc
-  const enrichedPlan = { ...plan, accountBalance: args.account, riskPerTrade: args.risk }
+    // 5. Calculate
+    const plan = calculateTradePlan({
+      ticker,
+      priceHistory: history,
+      accountBalance,
+      riskPerTrade,
+      entryPrice,
+    })
 
-  if (args.mode === "spreadbet") {
-    renderSpreadBetPlan(enrichedPlan, platform)
-  } else {
-    renderSharesPlan(enrichedPlan, platform)
-  }
-}
+    // 6. Render
+    if (mode === "spreadbet") {
+      renderSpreadBet(plan, accountBalance, riskPerTrade)
+    } else {
+      renderShares(plan)
+    }
+
+    // 7. Warnings
+    if (plan.concentrationFlag) {
+      console.warn(`⚠️  Warning: Position exceeds 5% of portfolio`)
+    }
+    if (plan.insufficientHistory) {
+      console.warn(
+        `⚠️  Warning: Less than 22 days of price history — calculations may be unreliable`,
+      )
+    }
+  },
+})

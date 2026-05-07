@@ -15,6 +15,7 @@
     "colorizr": "^5.0.1"
   },
   "dependencies": {
+    "citty": "^0.2.2",
     "dotenv": "^17.4.2",
     "hono": "^4.9.8",
     "js-yaml": "^4.1.1",
