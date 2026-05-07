@@ -94,7 +94,7 @@ function SignalRow({
         {spark ? (
           <span class="trend-sparkline">{spark}</span>
         ) : (
-          <span class="muted">\u2014</span>
+          <span class="muted">—</span>
         )}
       </td>
       <td>{conf}</td>

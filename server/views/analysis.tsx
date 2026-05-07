@@ -23,9 +23,9 @@ export function AnalysisView() {
             <label><input type="checkbox" name="analysts" value="fundamentals" checked /> Fundamentals</label>
           </div>
           <div id="position-context-banner" class="banner" style="display:none">
-            \u26a0 <span id="position-context-text" />
+            ⚠ <span id="position-context-text" />
           </div>
-          <button type="submit" id="run-analysis-btn">\u25b6 Run Analysis</button>
+          <button type="submit" id="run-analysis-btn">▶ Run Analysis</button>
         </form>
       </section>
 

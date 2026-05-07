@@ -10,7 +10,7 @@ export function GovernancePanel({ data }: { data: PortfolioIntel }) {
     <>
       {gov.violations && gov.violations.length > 0 ? (
         <>
-          <h4>\u26a0\ufe0f Violations</h4>
+          <h4>⚠️ Violations</h4>
           {gov.violations.map((v) => {
             const cls = v.severity === "breach" ? "violation-breach" : "violation-warn"
             return (
@@ -21,7 +21,7 @@ export function GovernancePanel({ data }: { data: PortfolioIntel }) {
           })}
         </>
       ) : (
-        <div class="ok">\u2705 All rules satisfied</div>
+        <div class="ok">✅ All rules satisfied</div>
       )}
 
       {gov.suggestions && gov.suggestions.length > 0 && (

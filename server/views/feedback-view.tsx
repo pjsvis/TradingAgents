@@ -161,9 +161,9 @@ export function CorrelationsTable({
                   </>
                 ) : (
                   <>
-                    <td class="muted">\u2014</td>
-                    <td class="muted">\u2014</td>
-                    <td class="muted">\u2014</td>
+                    <td class="muted">—</td>
+                    <td class="muted">—</td>
+                    <td class="muted">—</td>
                   </>
                 )}
                 <td class={sCls}>{c.signalOutcome}</td>

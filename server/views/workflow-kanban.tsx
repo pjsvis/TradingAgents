@@ -217,7 +217,7 @@ export function WorkflowKanban({ data }: { data: WorkflowData }) {
             </div>
             <div class="workflow-body">
               {items.length === 0 ? (
-                <div class="workflow-empty">\u2014</div>
+                <div class="workflow-empty">—</div>
               ) : (
                 items.map((item) => (
                   <WorkflowCard
