@@ -50,6 +50,7 @@ justify it in one sentence, delete it.
 | `Bun.spawn` over `execSync` | Streaming stdin support; no shell quoting bugs | 2026-05-07 |
 | Unicode literals over `\uXXXX` in JSX | Hono emits raw HTML; JS escapes only work in `{}` | 2026-05-07 |
 | No `new Database()` outside `db.ts` | Factory enforces WAL + pragmas consistently | 2026-05-06 |
+| Every deliberate folder has a `README.md` | Prevents mystery; draws boundaries between adjacent dirs | 2026-05-07 |
 
 ## Barnacle Removal Record
 
@@ -78,6 +79,10 @@ For each candidate found, judge:
 - Does it have a one-sentence justification?
 - Does following it create friction?
 - Is it referenced anywhere other than the document itself?
+
+Also inspect the directory tree:
+- Any folder with more than one file and no `README.md`? Suspicious.
+- Adjacent folders with similar names but no boundary drawn? Likely barnacles.
 
 If it fails two of three: it is a barnacle. Scrape it. Update the record.
 If it passes: add it to the Active Conventions table with its justification.
