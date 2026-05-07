@@ -170,7 +170,7 @@ Edit `.tradingagents/gitnexus-diagrams.json`:
 }
 ```
 
-Then run `just regen-diagrams`. No Justfile changes needed.
+Then run `just regen-diagrams`. No justfile changes needed.
 
 ### Committing
 
@@ -244,7 +244,7 @@ See the [impact graph](docs/diagrams/gn-impact-calculateTradePlan.png) for the f
 
 ## Adding New Diagrams to Auto-Regeneration
 
-Edit the `gn-diagrams` recipe in `Justfile`:
+Edit the `gn-diagrams` recipe in `justfile`:
 
 ```makefile
 [group("gn")]

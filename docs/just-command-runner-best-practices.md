@@ -200,7 +200,7 @@ sync:
 
 Use `{{variable}}` to reference them in recipes.
 
-## Organizing Justfiles
+## Organizing justfiles
 
 ### Start Simple
 
