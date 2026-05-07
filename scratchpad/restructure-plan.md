@@ -125,17 +125,28 @@ All other `server/lib/*.ts` files are ONLY imported inside `server/`. Safe to mo
 5. Run `just check` — must pass
 6. Verify server starts and responds
 
+## Startup Ritual (Before Any Work)
+
+Bun makes GitNexus re-indexing fast enough to be routine. A stale knowledge graph is a barnacle — it misleads every query.
+
+```bash
+gitnexus analyze        # Full re-index (~10-30s for this repo)
+just check              # Type check + lint + DB usage gate
+```
+
+Only after both pass do you touch code. This is the "clear graph, clear mind" rule.
+
 ## Checkpoint After Each Phase
 
 | Phase | Gate | Check |
 |-------|------|-------|
 | 0 | Cross-directory imports eliminated | `grep -rn "server/lib" scripts/ cli/trading/ tests/` = 0 |
-| 0 | GitNexus graph intact | `gitnexus context DatabaseFactory` finds symbol at new path |
+| 0 | Graph spot-check | `gitnexus context DatabaseFactory` finds symbol at new path |
 | 1 | Directories moved | `ls src/server/index.tsx src/cli/main.ts` exists |
-| 1 | GitNexus re-indexed | `gitnexus analyze` completes with no errors |
-| 1 | Import graph valid | `gitnexus context calculateTradePlan` finds symbol in src/lib/ |
+| 1 | Type check passes | `tsc --noEmit` |
+| 1 | Graph spot-check | `gitnexus context calculateTradePlan` finds symbol in src/lib/ |
 | 2 | Wiring updated | Server starts, health check passes |
-| 2 | GitNexus graph fresh | `gitnexus status` shows indexed files match new structure |
+| 2 | Graph spot-check | `gitnexus status` shows indexed files match new structure |
 
 ## Risk Assessment
 
