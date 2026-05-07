@@ -132,13 +132,15 @@ async function cmdStatus(): Promise<void> {
   const services = [getDashboardStatus(), getDatabaseStatus(), getGitnexusStatus()]
 
   const tableLines = [
-    "Service            Status     PID     Port  Action",
+    "Service            Status     PID     Port  Just",
     "───────────────────────────────────────────────────",
     ...services.map((s) => {
       const pidStr = s.pid?.toString() ?? "—"
       const portStr = s.port?.toString() ?? "—"
       return `${s.name.padEnd(18)} ● ${s.status.padEnd(8)} ${pidStr.padStart(6)} ${portStr.padStart(5)}  ${s.action}`
     }),
+    "",
+    "just serve / persist / index",
   ].join("\n")
 
   console.log("")
