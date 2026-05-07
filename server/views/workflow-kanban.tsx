@@ -130,7 +130,7 @@ function PendingExitCard({ item }: { item: WorkflowPendingExitItem }) {
         {ep.timeStopDaysLeft !== undefined && ep.timeStopDaysLeft !== null && (
           <div class="process-row">
             <span class={`process-dot ${ep.timeStopDaysLeft < 30 ? "warning" : "pending"}`}>
-              \u23F1
+              ⏱
             </span>
             <span>Time stop in {ep.timeStopDaysLeft}d</span>
           </div>
@@ -139,22 +139,22 @@ function PendingExitCard({ item }: { item: WorkflowPendingExitItem }) {
 
       {ep.distanceToStopPct > 0 && ep.distanceToStopPct < 10 && (
         <span class="urgency-badge" style="background:#ef4444">
-          \u26A0 Near stop
+          ⚠ Near stop
         </span>
       )}
       {ep.distanceToStopPct >= 10 && ep.distanceToStopPct < 15 && (
         <span class="urgency-badge" style="background:#f59e0b">
-          \u26A0 Watch
+          ⚠ Watch
         </span>
       )}
       {ep.targetsHit > 0 && (
         <span class="urgency-badge" style="background:#22c55e">
-          \u2713 {ep.targetsHit}/{targets.length} hit
+          ✓ {ep.targetsHit}/{targets.length} hit
         </span>
       )}
       {ep.timeStopDaysLeft !== undefined && ep.timeStopDaysLeft !== null && ep.timeStopDaysLeft < 30 && (
         <span class="urgency-badge" style="background:#ef4444">
-          \u23F1 {ep.timeStopDaysLeft}d
+          ⏱ {ep.timeStopDaysLeft}d
         </span>
       )}
 

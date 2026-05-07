@@ -28,5 +28,5 @@ export function fmtGBP(n: number | null | undefined, dec = 2): string {
   if (n == null || Number.isNaN(n)) return "\u2014"
   // Place the sign before the currency symbol: "-£1,234.56", not "£-1,234.56".
   const sign = n < 0 ? "-" : ""
-  return `${sign}\u00a3${fmtCommas(Math.abs(n), dec)}`
+  return `${sign}£${fmtCommas(Math.abs(n), dec)}`
 }

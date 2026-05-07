@@ -110,7 +110,7 @@ function ProspectCard({ item, stage }: { item: Prospect; stage: string }) {
             hx-swap="innerHTML"
             hx-vals={`{"stage":"${nextStage}"}`}
           >
-            \u2192
+            →
           </button>
         )}
         <button
@@ -120,7 +120,7 @@ function ProspectCard({ item, stage }: { item: Prospect; stage: string }) {
           hx-swap="innerHTML"
           hx-confirm={`Remove ${item.ticker}?`}
         >
-          \u2715
+          ✕
         </button>
       </div>
     </div>

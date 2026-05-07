@@ -26,13 +26,13 @@ export function PlatformTable({ platforms }: { platforms: PlatformAllocation[] }
               <span class="platform-tag">{esc(p.platform)}</span>
             </td>
             <td style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1">
-              \u00a3{fmtCommas(p.total_value_gbp)}
+              £{fmtCommas(p.total_value_gbp)}
             </td>
             <td style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1">
               {fmtCommas(p.weight_pct)}%
             </td>
             <td style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1">
-              \u00a3{fmtCommas(p.cash_gbp)}{" "}
+              £{fmtCommas(p.cash_gbp)}{" "}
               <span class="muted">({fmtCommas(p.cash_pct)}%)</span>
             </td>
             <td>

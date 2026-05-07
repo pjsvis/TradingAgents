@@ -44,7 +44,7 @@ export function PortfolioSummaryView({ data }: { data: PortfolioSummary }) {
                 id="pnl-total-value"
                 style="font-size:1.4em;font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1"
               >
-                \u00a3{fmt(totals.portfolio_value_gbp)}
+                £{fmt(totals.portfolio_value_gbp)}
               </div>
             </div>
             <div>
@@ -55,7 +55,7 @@ export function PortfolioSummaryView({ data }: { data: PortfolioSummary }) {
                 id="pnl-total-cost"
                 style="font-size:1.4em;font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1"
               >
-                \u00a3{fmt(totals.total_cost_gbp)}
+                £{fmt(totals.total_cost_gbp)}
               </div>
             </div>
             <div>
@@ -67,7 +67,7 @@ export function PortfolioSummaryView({ data }: { data: PortfolioSummary }) {
                 style="font-size:1.4em;font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1"
                 class={`pnl-cell ${pnlCls}`}
               >
-                \u00a3{fmtPnl(pnl)}
+                £{fmtPnl(pnl)}
                 {totals.total_pnl_pct != null
                   ? ` (${pnl != null && pnl >= 0 ? "+" : ""}${fmt(totals.total_pnl_pct)}%)`
                   : " \u2014"}
@@ -115,11 +115,11 @@ export function PortfolioSummaryView({ data }: { data: PortfolioSummary }) {
                       : "\u2014"
                   const curPrice =
                     p.current_price_gbp != null
-                      ? `\u00a3${fmt(p.current_price_gbp)}`
+                      ? `£${fmt(p.current_price_gbp)}`
                       : "\u2014"
                   const curVal =
                     p.current_value_gbp != null
-                      ? `\u00a3${fmt(p.current_value_gbp)}`
+                      ? `£${fmt(p.current_value_gbp)}`
                       : "\u2014"
 
                   return (
@@ -129,7 +129,7 @@ export function PortfolioSummaryView({ data }: { data: PortfolioSummary }) {
                       </td>
                       <td class="ticker">{esc(p.ticker)}</td>
                       <td>{fmt(p.quantity)}</td>
-                      <td>\u00a3{fmt(p.avg_cost)}</td>
+                      <td>£{fmt(p.avg_cost)}</td>
                       <td
                         style="font-family:Datatype,monospace;font-feature-settings:'calt'1,'liga'1"
                       >

@@ -61,7 +61,7 @@ export function ViolationsPanel({
 
       {violations.length > 0 ? (
         <>
-          <h4>\u26a0\ufe0f Violations</h4>
+          <h4>⚠️ Violations</h4>
           {violations.map((v) => {
             const cls = v.severity === "breach" ? "violation-breach" : "violation-warn"
             return (
@@ -72,7 +72,7 @@ export function ViolationsPanel({
           })}
         </>
       ) : (
-        <div class="ok">\u2705 All rules satisfied</div>
+        <div class="ok">✅ All rules satisfied</div>
       )}
 
       {suggestions.length > 0 && (

@@ -306,7 +306,7 @@ export function HoldingsPage({ holdingsData, positionsData }: {
                       <div class="platform-name">{p.name}</div>
                       <div class="platform-total">{fmtGBP(Number(p.totalValue))}</div>
                       <div class="platform-detail">
-                        {Number(p.holdingCount)} holdings \u00b7 {fmtGBP(Number(p.cash))} cash
+                        {Number(p.holdingCount)} holdings · {fmtGBP(Number(p.cash))} cash
                       </div>
                     </div>
                   ))}

@@ -213,7 +213,7 @@ export function AnalysisCardView({ row }: { row: DbAnalysis }) {
         hx-target="#history-content"
         hx-swap="innerHTML"
       >
-        \u2190 Back to list
+        ← Back to list
       </button>
       <div class="analysis-report-container">
         <AnalysisReportView row={row} />
