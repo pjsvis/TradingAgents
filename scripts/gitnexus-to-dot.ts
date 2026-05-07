@@ -2,6 +2,10 @@
 /**
  * Export a GitNexus subgraph to Graphviz DOT format.
  *
+ * Writes to docs/diagrams/ by default with auto-generated filenames:
+ *   --symbol → docs/diagrams/gn-impact-<symbol>.dot
+ *   --file   → docs/diagrams/gn-file-<filename>.dot
+ *
  * Usage:
  *   bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan          # impact graph
  *   bun scripts/gitnexus-to-dot.ts --file cli/trading/commands/plan.ts   # file graph
@@ -41,7 +45,12 @@ interface Options {
 
 function parseArgs(): Options {
   const args = Bun.argv.slice(2)
-  const opts: Options = { depth: 1, render: false, output: "./graph.dot", maxNodes: 100 }
+  const opts: Options = {
+    depth: 1,
+    render: false,
+    output: "./docs/diagrams/gn-graph.dot",
+    maxNodes: 100,
+  }
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]
@@ -314,8 +323,25 @@ ${edgeLines.join("\n")}
 
 // ── Main ────────────────────────────────────────────────────────────────────
 
+function defaultOutputPath(opts: Options): string {
+  const base = "./docs/diagrams"
+  if (opts.symbol) {
+    const safe = opts.symbol.replace(/[^a-zA-Z0-9_-]/g, "_")
+    return `${base}/gn-impact-${safe}.dot`
+  }
+  if (opts.file) {
+    const name = opts.file.replace(/\//g, "_").replace(/\..+$/, "")
+    return `${base}/gn-file-${name}.dot`
+  }
+  return `${base}/gn-graph.dot`
+}
+
 function main() {
   const opts = parseArgs()
+
+  // Auto-generate output path if not explicitly overridden
+  const output =
+    opts.output === "./docs/diagrams/gn-graph.dot" ? defaultOutputPath(opts) : opts.output
 
   console.log(
     `Building graph: ${opts.symbol ? `symbol=${opts.symbol}` : `file=${opts.file}`}, depth=${opts.depth}`,
@@ -345,20 +371,20 @@ function main() {
   }
 
   const dot = toDot(nodes, edges, title)
-  writeFileSync(opts.output, dot)
-  console.log(`  DOT written: ${opts.output}`)
+  writeFileSync(output, dot)
+  console.log(`  DOT written: ${output}`)
 
   if (opts.render) {
-    const svgPath = opts.output.replace(/\.dot$/, ".svg")
-    const pngPath = opts.output.replace(/\.dot$/, ".png")
+    const svgPath = output.replace(/\.dot$/, ".svg")
+    const pngPath = output.replace(/\.dot$/, ".png")
     try {
-      execSync(`dot -Tsvg "${opts.output}" -o "${svgPath}"`, { encoding: "utf-8" })
+      execSync(`dot -Tsvg "${output}" -o "${svgPath}"`, { encoding: "utf-8" })
       console.log(`  SVG rendered: ${svgPath}`)
     } catch (e) {
       console.error(`  SVG render failed: ${e instanceof Error ? e.message : String(e)}`)
     }
     try {
-      execSync(`dot -Tpng "${opts.output}" -o "${pngPath}"`, { encoding: "utf-8" })
+      execSync(`dot -Tpng "${output}" -o "${pngPath}"`, { encoding: "utf-8" })
       console.log(`  PNG rendered: ${pngPath}`)
     } catch (e) {
       console.error(`  PNG render failed: ${e instanceof Error ? e.message : String(e)}`)

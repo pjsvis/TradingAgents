@@ -416,6 +416,20 @@ diagrams-clean:
     rm -f docs/diagrams/*.svg
     @echo "Cleaned SVG files."
 
+# Regenerate all diagrams: static + gitnexus graphs
+[group("diagrams")]
+regen-diagrams:
+    @echo "=== Step 1: Clean old SVGs ==="
+    rm -f docs/diagrams/*.svg
+    @echo "=== Step 2: Generate GitNexus graphs ==="
+    bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
+    bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render
+    bun scripts/gitnexus-to-dot.ts --symbol calculateATR --depth 1 --render
+    @echo "=== Step 3: Render all DOT files to SVG ==="
+    bun scripts/render_diagrams.ts
+    @echo ""
+    @echo "Done. All diagrams regenerated in docs/diagrams/"
+
 # ── PR review cache ─────────────────────────────────────────
 # Persist PR reviews as markdown in debriefs/reviews/ for offline review.
 # Run `just prs` to list open PRs, `just pr-fetch N` to save one,
@@ -475,15 +489,32 @@ gn-cypher QUERY:
 gn-analyze:
     gitnexus analyze --force .
 
-# Export symbol impact graph to DOT/SVG (serve is broken — use this instead)
+# Export symbol impact graph to DOT/SVG (writes docs/diagrams/gn-impact-<SYM>.dot)
 [group("gn")]
 gn-graph-symbol SYM:
     bun scripts/gitnexus-to-dot.ts --symbol {{SYM}} --depth 1 --render
 
-# Export file module graph to DOT/SVG
+# Export file module graph to DOT/SVG (writes docs/diagrams/gn-file-<FILE>.dot)
 [group("gn")]
 gn-graph-file FILE:
-    bun scripts/gitnexus-to-dot.ts --file {{FILE}} --render --output graph-file.dot
+    bun scripts/gitnexus-to-dot.ts --file {{FILE}} --render
+
+# Generate key GitNexus graphs for the project (impact graphs for hotspots)
+[group("gn")]
+gn-diagrams:
+    @echo "Generating GitNexus impact graphs..."
+    bun scripts/gitnexus-to-dot.ts --symbol calculateTradePlan --depth 1 --render
+    bun scripts/gitnexus-to-dot.ts --symbol DatabaseFactory --depth 2 --render
+    bun scripts/gitnexus-to-dot.ts --symbol calculateATR --depth 1 --render
+    @echo ""
+    @echo "Generated:"
+    @ls -1 docs/diagrams/gn-impact-*.dot 2>/dev/null || echo "  (no files yet)"
+
+# Remove generated GitNexus diagrams
+[group("gn")]
+gn-diagrams-clean:
+    rm -f docs/diagrams/gn-impact-* docs/diagrams/gn-file-*
+    @echo "Cleaned GitNexus diagrams."
 
 # ⚠️ BROKEN: gitnexus serve fails due to CSP on gitnexus.vercel.app
 # Use gn-graph-symbol or gn-graph-file instead
@@ -492,6 +523,7 @@ gn-serve:
     @echo "⚠️  gitnexus serve is broken — CSP blocks localhost. Use:"
     @echo "   just gn-graph-symbol <SYMBOL>   # impact graph"
     @echo "   just gn-graph-file <FILE>       # module graph"
+    @echo "   just gn-diagrams                # key project graphs"
 
 # Show index status
 [group("gn")]
