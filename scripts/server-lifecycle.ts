@@ -15,6 +15,7 @@
 
 import { execSync, spawn } from "node:child_process"
 import { existsSync } from "node:fs"
+import { gum } from "./lib/gum.ts"
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ interface ServiceStatus {
   port: number | null
   uptime: string | null
   status: "running" | "stopped" | "unknown"
-  command?: string
+  action: string
 }
 
 // ── Service Detection ─────────────────────────────────────────────────────
@@ -37,7 +38,14 @@ function getDashboardStatus(): ServiceStatus {
     })
     const lines = output.trim().split("\n").filter(Boolean)
     if (lines.length === 0) {
-      return { name: "Dashboard Server", pid: null, port: 3000, uptime: null, status: "stopped" }
+      return {
+        name: "Dashboard Server",
+        pid: null,
+        port: 3000,
+        uptime: null,
+        status: "stopped",
+        action: "serve",
+      }
     }
 
     const line = lines[0]
@@ -60,10 +68,17 @@ function getDashboardStatus(): ServiceStatus {
       port: 3000,
       uptime,
       status: portStatus,
-      command: "bun run server/index.tsx",
+      action: "serve",
     }
   } catch {
-    return { name: "Dashboard Server", pid: null, port: 3000, uptime: null, status: "stopped" }
+    return {
+      name: "Dashboard Server",
+      pid: null,
+      port: 3000,
+      uptime: null,
+      status: "stopped",
+      action: "serve",
+    }
   }
 }
 
@@ -83,7 +98,7 @@ function getDatabaseStatus(): ServiceStatus {
     port: null,
     uptime: null,
     status: existsSync(activeDb) ? "running" : "unknown",
-    command: `Database: ${activeDb}`,
+    action: "persist",
   }
 }
 
@@ -97,50 +112,70 @@ function getGitnexusStatus(): ServiceStatus {
       port: null,
       uptime: null,
       status: hasIndex ? "running" : "stopped",
-      command: "Indexed: TradingAgents",
+      action: "index",
     }
   } catch {
-    return { name: "GitNexus Index", pid: null, port: null, uptime: null, status: "unknown" }
+    return {
+      name: "GitNexus Index",
+      pid: null,
+      port: null,
+      uptime: null,
+      status: "unknown",
+      action: "index",
+    }
   }
 }
 
 // ── Commands ────────────────────────────────────────────────────────────────
 
-function cmdStatus(): void {
+async function cmdStatus(): Promise<void> {
   const services = [getDashboardStatus(), getDatabaseStatus(), getGitnexusStatus()]
 
+  const tableLines = [
+    "Service            Status     PID     Port  Action",
+    "───────────────────────────────────────────────────",
+    ...services.map((s) => {
+      const pidStr = s.pid?.toString() ?? "—"
+      const portStr = s.port?.toString() ?? "—"
+      return `${s.name.padEnd(18)} ● ${s.status.padEnd(8)} ${pidStr.padStart(6)} ${portStr.padStart(5)}  ${s.action}`
+    }),
+  ].join("\n")
+
   console.log("")
-  console.log("╔══════════════════════════════════════════════════════════════╗")
-  console.log("║           TradingAgents Service Status                      ║")
-  console.log("╠══════════════════════════════════════════════════════════════╣")
-  console.log("║ Service              │ Status  │ PID    │ Port  │ Details   ║")
-  console.log("╠══════════════════════╪═════════╪════════╪═══════╪═══════════╣")
+  console.log(
+    await gum("TradingAgents", [
+      "--bold",
+      "--foreground",
+      "212",
+      "--width",
+      "64",
+      "--align",
+      "center",
+    ]),
+  )
+  console.log(await gum(tableLines, ["--border", "rounded", "--padding", "1 2", "--width", "64"]))
 
-  for (const svc of services) {
-    const statusColor = svc.status === "running" ? "🟢" : svc.status === "stopped" ? "🔴" : "🟡"
-    const pidStr = svc.pid?.toString().padStart(6) ?? "   —  "
-    const portStr = svc.port?.toString().padStart(5) ?? "  —  "
-    const detail = svc.command ?? svc.uptime ?? "—"
-    console.log(
-      `║ ${svc.name.padEnd(20)} │ ${statusColor} ${svc.status.padEnd(5)} │ ${pidStr} │ ${portStr} │ ${detail.padEnd(9)} ║`,
-    )
-  }
-
-  console.log("╚══════════════════════════════════════════════════════════════╝")
-  console.log("")
-
-  // Quick health check
   const dashboard = services.find((s) => s.name === "Dashboard Server")
   if (dashboard?.status === "running") {
     try {
       execSync("curl -s http://localhost:3000/health >/dev/null", { timeout: 2000 })
-      console.log("✅ Dashboard responding on http://localhost:3000")
+      console.log(
+        await gum("  ✓ Dashboard responding on http://localhost:3000", ["--foreground", "2"]),
+      )
     } catch {
-      console.log("⚠️  Dashboard process running but not responding on port 3000")
+      console.log(
+        await gum("  ! Dashboard process running but not responding on port 3000", [
+          "--foreground",
+          "3",
+        ]),
+      )
     }
   } else {
-    console.log("❌ Dashboard not running. Start with: bun scripts/server-lifecycle.ts start")
+    console.log(
+      await gum("  ✗ Dashboard not running — start with: just start", ["--foreground", "1"]),
+    )
   }
+  console.log("")
 }
 
 function cmdStart(): void {
@@ -243,13 +278,13 @@ function cmdLogs(): void {
 
 // ── Main ────────────────────────────────────────────────────────────────────
 
-function main() {
+async function main() {
   const command = Bun.argv[2] ?? "status"
 
   switch (command) {
     case "status":
     case "s":
-      cmdStatus()
+      await cmdStatus()
       break
     case "start":
       cmdStart()
