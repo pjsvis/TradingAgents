@@ -22,6 +22,7 @@ import { workflowRouter } from "./routes/workflow.tsx";
 import { intelligenceRouter } from "./routes/portfolio-intelligence.tsx";
 import { portfolioBalanceRouter } from "./routes/portfolio-balance.ts";
 import { tradePlanRouter } from "./routes/trade-plan.tsx";
+import labCurrencyRouter from "./routes/lab-currency.tsx";
 import { Layout } from "./views/layout.tsx";
 import { PortfolioView } from "./views/portfolio.tsx";
 import { AnalysisView } from "./views/analysis.tsx";
@@ -125,6 +126,7 @@ app.get("/benchmark", (c) => pageOrPartial(c, <BenchmarkView />));
 app.get("/feedback", (c) => pageOrPartial(c, <FeedbackView />));
 app.get("/about", (c) => pageOrPartial(c, <AboutView />));
 app.get("/test/datatype", (c) => pageOrPartial(c, <DatatypeTestView />));
+app.route("/lab/currency", labCurrencyRouter);
 
 // ── Static (serve only from static/ directory, not source files) ──
 
