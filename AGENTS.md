@@ -274,8 +274,8 @@ This project is indexed by GitNexus as **TradingAgents** (5074 symbols, 6891 rel
 
 ## Always Do
 
-- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
-- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST run impact analysis before editing any function, class, or method signature.** Before renaming, extracting, removing, or changing the signature of a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user. Not needed for docs, lint, config, or one-line fixes that don't change the call graph.
+- **MUST run `gitnexus_detect_changes()` before committing structural changes** to verify your changes only affect expected symbols and execution flows. Skip for documentation-only or lint-only commits.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
 - When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
