@@ -38,7 +38,7 @@ td handoff <id1>
 This codebase is **primarily a Bun/TypeScript house.**
 
 - **Dashboard/server work** (routes, views, scripts, tooling): **TypeScript with Bun only.**
-- **Python is reserved for:** the `tradingagents/` core package, the CLI entry point (`cli/main.py`), and the bridge script (`scripts/py/analyze_stream.py`).
+- **Python is reserved for:** the `tradingagents/` core package, the CLI entry point (`src/cli/main.py`), and the bridge script (`scripts/py/analyze_stream.py`).
 - **No Python for auxiliary tasks.** Do not reach for Python for one-off conversions, data transforms, or code-generation scripts. Use `bun -e "..."`, a `.ts` script in `scripts/`, or a throwaway `.ts` file instead.
 - **Never add a Python dependency** to solve a problem that a 20-line TypeScript snippet or an npm package can handle.
 
@@ -51,7 +51,7 @@ This repo contains **two distinct systems** sharing one codebase:
 | System | What | Language | Entry Point |
 |--------|------|----------|-------------|
 | **tradingagents package** | Multi-agent LLM trading framework | Python 3.13 | `tradingagents analyze` (CLI) / `TradingAgentsGraph` (API) |
-| **Dashboard server** | Web UI wrapping the Python package | TypeScript (Bun/Hono) | `bun run server/index.tsx` |
+| **Dashboard server** | Web UI wrapping the Python package | TypeScript (Bun/Hono) | `bun run src/server/index.tsx` |
 
 **Golden rule:** The dashboard wraps the `tradingagents` package via subprocess. **Never fork or modify `tradingagents/` core agent logic** unless fixing a bug. The bridge is `scripts/analyze_stream.py`.
 
@@ -66,7 +66,7 @@ The dashboard server listens on port **3000** by default.
 ```bash
 # Environment variable override:
 export TA_DASHBOARD_PORT=8080
-bun run server/index.tsx
+bun run src/server/index.tsx
 ```
 
 If port 3000 is occupied, kill stale processes before restarting:
@@ -78,7 +78,7 @@ pkill -9 -f bun   # zombie bun processes are common
 
 | Task | Command |
 |------|---------|
-| Start dashboard | `bun run server/index.tsx` |
+| Start dashboard | `bun run src/server/index.tsx` |
 | Run CLI analysis | `tradingagents analyze` or `just run` |
 | Analyze specific ticker | `just analyze TKA.DE` |
 | Run tests | `uv run pytest -v -m smoke` |
@@ -104,7 +104,7 @@ pkill -9 -f bun   # zombie bun processes are common
 
 ### 1. Database — `DatabaseFactory` only
 
-All SQLite access goes through `server/lib/db.ts` → `DatabaseFactory`.
+All SQLite access goes through `src/server/lib/db.ts` → `DatabaseFactory`.
 - **Never** use `new Database()` directly.
 - **Always** use the factory singleton (WAL mode, pragmas enforced).
 - **Always** `parseFloat()` on SQLite REAL columns — they return strings.
@@ -113,7 +113,7 @@ All SQLite access goes through `server/lib/db.ts` → `DatabaseFactory`.
 
 - Server renders HTML via Hono JSX (`.tsx` with `/** @jsxImportSource hono/jsx */`).
 - **No SPA frameworks** (no React, Vue, Svelte on client).
-- **No client-side markdown** — rendered server-side via `server/lib/markdown.ts`.
+- **No client-side markdown** — rendered server-side via `src/server/lib/markdown.ts`.
 - Use `pageOrPartial(c, <View />)` for routes that serve both full pages and HTMX partials.
 
 ### 3. HTMX + JSON APIs don't mix
@@ -136,7 +136,7 @@ All SQLite access goes through `server/lib/db.ts` → `DatabaseFactory`.
 
 ### 6. Datatype font
 
-- Uses the **variable font** from `server/static/fonts/Datatype.woff2` (has GSUB table).
+- Uses the **variable font** from `src/server/static/fonts/Datatype.woff2` (has GSUB table).
 - Static fonts (e.g. from CDN) lack GSUB — chart ligatures will not render.
 - Three chart types: `{l:values}` sparkline, `{b:values}` bar chart, `{p:value}` pie chart.
 - `font-feature-settings: 'calt' 1, 'liga' 1` is mandatory in CSS.
@@ -165,10 +165,10 @@ TradingAgents/
 │   ├── agents/                │   LLM-powered agent definitions
 │   └── default_config.py      │   All config keys + defaults
 │
-├── cli/                       ← Python CLI (typer-based)
+├── src/cli/                   ← TypeScript CLI + Python CLI
 │   └── main.py                │   `tradingagents analyze` entry point
 │
-├── server/                    ← Bun/Hono dashboard server
+├── src/server/                ← Bun/Hono dashboard server
 │   ├── index.tsx              │   Entry: routes, lifecycle, graceful shutdown
 │   ├── lib/                   │
 │   │   ├── db.ts              │   DatabaseFactory (WAL, singleton)
@@ -239,7 +239,7 @@ TradingAgents/
 ### Known Failure Modes
 
 **Static JS copies of TypeScript = maintenance trap.**
-The canonical client-side runtime lives in `server/static/scripts/*.js`. These are the single source of truth for browser behaviour — not copies of some TypeScript original. Views reference them via `<script src="/static/scripts/xxx.js" />`. Biome linting for this directory is disabled in `biome.json` (client-side JS has different constraints than server TS). Do not maintain a second inline TypeScript copy in views.
+The canonical client-side runtime lives in `src/server/static/scripts/*.js`. These are the single source of truth for browser behaviour — not copies of some TypeScript original. Views reference them via `<script src="/static/scripts/xxx.js" />`. Biome linting for this directory is disabled in `biome.json` (client-side JS has different constraints than server TS). Do not maintain a second inline TypeScript copy in views.
 
 **Biome config changes must be validated immediately.**
 `biome.json` is validated by biome itself. If you add a key that doesn't exist (`files.ignore` is not valid at v2.4.14), biome fails with a parse error before running any checks. Always run `just lint` after any `biome.json` change.
@@ -253,7 +253,7 @@ If a change breaks checks and the fix isn't obvious, revert to the last known-go
 **No test coverage for views.** `pytest -m smoke` only covers Python. TypeScript views have no automated test. Until we have route-level tests (`td-9dbbac`), the only guard is: check `tsc` + `lint` + manual browser verification.
 
 **Route file with JSX retaining `.ts` extension.**
-Biome will produce cryptic parse errors: "expected `>` but instead found `data"`. The parser treats JSX as TypeScript class syntax. Fix: rename to `.tsx` and update all imports in `server/index.tsx`.
+Biome will produce cryptic parse errors: "expected `>` but instead found `data"`. The parser treats JSX as TypeScript class syntax. Fix: rename to `.tsx` and update all imports in `src/server/index.tsx`.
 
 **Forward-porting vs merging.**
 When a PR was written against old architecture that you've since refactored, evaluate conflict count × semantic distance. String-concat vs JSX is a chasm, not a gap. If >15 conflict regions: abort merge, cherry-pick ideas, rewrite into new architecture.

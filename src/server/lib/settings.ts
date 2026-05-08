@@ -115,7 +115,7 @@ export const cfg = {
 
   app: {
     benchmarkTicker: optionalStr(process.env.BENCHMARK, DEFAULTS.defaults.benchmarkTicker),
-    dashboardPort: optionalNum(process.env.PORT ?? process.env.TA_DASHBOARD_PORT, 3000),
+    dashboardPort: optionalNum(process.env.TA_DASHBOARD_PORT ?? process.env.PORT, 3000),
     openRouterApiKey: process.env.OPENROUTER_API_KEY ?? "",
     hasOpenRouter: !!process.env.OPENROUTER_API_KEY,
   },

@@ -31,7 +31,8 @@ describe("getIGInstrument", () => {
 
 describe("IG_INSTRUMENTS config", () => {
   test("FTSE 100 has correct IG parameters", () => {
-    const ftse = IG_INSTRUMENTS["FTSE 100"]!
+    const ftse = IG_INSTRUMENTS["FTSE 100"]
+    if (!ftse) throw new Error("FTSE 100 not found in IG_INSTRUMENTS")
     expect(ftse.marginFactor).toBe(0.05)
     expect(ftse.minStopDistance).toBe(8)
     expect(ftse.minDealSize).toBe(0.5)
@@ -41,7 +42,8 @@ describe("IG_INSTRUMENTS config", () => {
   })
 
   test("AAPL has correct IG parameters", () => {
-    const aapl = IG_INSTRUMENTS["AAPL"]!
+    const aapl = IG_INSTRUMENTS.AAPL
+    if (!aapl) throw new Error("AAPL not found in IG_INSTRUMENTS")
     expect(aapl.marginFactor).toBe(0.2)
     expect(aapl.minStopDistance).toBe(1)
     expect(aapl.minDealSize).toBe(0.01)

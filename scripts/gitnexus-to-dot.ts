@@ -197,7 +197,8 @@ function buildImpactGraph(
   })
 
   while (queue.length > 0 && nodes.size < maxNodes) {
-    const current = queue.shift()!
+    const current = queue.shift()
+    if (!current) continue
     if (visited.has(current.id)) continue
     visited.add(current.id)
 
@@ -356,8 +357,8 @@ function main() {
     nodes = result.nodes
     edges = result.edges
     title = `Impact of ${opts.symbol}`
-  } else {
-    const result = buildFileGraph(opts.file!, opts.maxNodes)
+  } else if (opts.file) {
+    const result = buildFileGraph(opts.file, opts.maxNodes)
     nodes = result.nodes
     edges = result.edges
     title = `Symbols in ${opts.file?.split("/").pop()}`

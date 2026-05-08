@@ -40,7 +40,7 @@ async function readPid(): Promise<number | null> {
   try {
     const text = await readFile(PID_FILE, "utf-8")
     const pid = parseInt(text.trim(), 10)
-    return isNaN(pid) ? null : pid
+    return Number.isNaN(pid) ? null : pid
   } catch {
     return null
   }

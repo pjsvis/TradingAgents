@@ -5,17 +5,6 @@ import { accountArg, entryArg, modeArg, platformArg, riskArg, tickerArg } from "
 import { getIGInstrument, validateIGPlan } from "../lib/ig-instruments.ts"
 import { getPlatform, type TradeMode, validateMode } from "../lib/platforms.ts"
 
-// ── Types ───────────────────────────────────────────────────────────────────
-
-interface PriceRow {
-  date: string
-  open: number
-  high: number
-  low: number
-  close: number
-  volume: number
-}
-
 // ── Data fetching ───────────────────────────────────────────────────────────
 
 function fetchPriceHistory(ticker: string): PriceBar[] {
@@ -68,7 +57,8 @@ function rr(plan: ReturnType<typeof calculateTradePlan>): string {
 // ── Renderers ───────────────────────────────────────────────────────────────
 
 function renderShares(plan: ReturnType<typeof calculateTradePlan>): void {
-  const platform = getPlatform("ig")! // default fallback for shares
+  const platform = getPlatform("ig")
+  if (!platform) throw new Error("Default platform 'ig' not found in platform config")
   const notional = plan.positionSize * plan.entry
   const stampDuty = notional * platform.stampDuty
   const commission = platform.commission ?? 0
@@ -83,7 +73,7 @@ function renderShares(plan: ReturnType<typeof calculateTradePlan>): void {
   console.log(`│ Target 1        │ $${fmt(plan.target1).padEnd(32)} │`)
   console.log(`│ Target 2        │ $${fmt(plan.target2).padEnd(32)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
-  console.log(`│ Position Size   │ ${(String(plan.positionSize) + " shares").padEnd(34)} │`)
+  console.log(`│ Position Size   │ ${(`${String(plan.positionSize)} shares`).padEnd(34)} │`)
   console.log(`│ Notional        │ £${fmt(notional).padEnd(32)} │`)
   if (platform.stampDuty > 0) {
     console.log(`│ Stamp Duty      │ £${fmt(stampDuty).padEnd(32)} │`)
@@ -95,9 +85,9 @@ function renderShares(plan: ReturnType<typeof calculateTradePlan>): void {
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Risk Amount     │ £${fmt(plan.riskAmount).padEnd(32)} │`)
   console.log(
-    `│ Risk %          │ ${(String((plan.riskPercent * 100).toFixed(2)) + "% of account").padEnd(34)} │`,
+    `│ Risk %          │ ${(`${String((plan.riskPercent * 100).toFixed(2))}% of account`).padEnd(34)} │`,
   )
-  console.log(`│ R/R Ratio       │ ${(rr(plan) + ":1").padEnd(34)} │`)
+  console.log(`│ R/R Ratio       │ ${(`${rr(plan)}:1`).padEnd(34)} │`)
   console.log(`│ ATR (14d)       │ ${String(plan.atr14.toFixed(4)).padEnd(34)} │`)
   console.log(`└─────────────────┴────────────────────────────────────┘`)
 
@@ -118,7 +108,8 @@ function renderSpreadBet(
   accountBalance: number,
   riskPerTrade: number,
 ): void {
-  const platform = getPlatform("ig")!
+  const platform = getPlatform("ig")
+  if (!platform) throw new Error("Default platform 'ig' not found in platform config")
   if (!platform.marginFactor || !platform.overnightRate) return
 
   const riskAmount = accountBalance * riskPerTrade
@@ -136,7 +127,7 @@ function renderSpreadBet(
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Entry           │ $${fmt(plan.entry).padEnd(32)} │`)
   console.log(`│ Stop Loss       │ $${fmt(plan.stopLoss).padEnd(32)} │`)
-  console.log(`│ Stop Distance   │ ${(String(stopDistance.toFixed(2)) + " points").padEnd(34)} │`)
+  console.log(`│ Stop Distance   │ ${(`${String(stopDistance.toFixed(2))} points`).padEnd(34)} │`)
   console.log(`│ Target 1        │ $${fmt(plan.target1).padEnd(32)} │`)
   console.log(`│ Target 2        │ $${fmt(plan.target2).padEnd(32)} │`)
   console.log(`├─────────────────┼────────────────────────────────────┤`)
@@ -149,9 +140,9 @@ function renderSpreadBet(
   console.log(`├─────────────────┼────────────────────────────────────┤`)
   console.log(`│ Risk Amount     │ £${fmt(riskAmount).padEnd(32)} │`)
   console.log(
-    `│ Risk %          │ ${(String((riskPerTrade * 100).toFixed(2)) + "% of account").padEnd(34)} │`,
+    `│ Risk %          │ ${(`${String((riskPerTrade * 100).toFixed(2))}% of account`).padEnd(34)} │`,
   )
-  console.log(`│ R/R Ratio       │ ${(rr(plan) + ":1").padEnd(34)} │`)
+  console.log(`│ R/R Ratio       │ ${(`${rr(plan)}:1`).padEnd(34)} │`)
   console.log(`│ ATR (14d)       │ ${String(plan.atr14.toFixed(4)).padEnd(34)} │`)
   console.log(`└─────────────────┴────────────────────────────────────┘`)
 

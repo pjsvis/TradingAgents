@@ -236,9 +236,9 @@ scratchpad/
 
 # Bun
 node_modules/
-!server/lib/
+!src/server/lib/
 !scripts/lib/
-!cli/trading/lib/
+!src/cli/lib/
 portfolio.db
 test_portfolio.db
 # Archived and backup files
