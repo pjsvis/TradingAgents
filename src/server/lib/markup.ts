@@ -19,8 +19,10 @@ export function fmt(n: number | null | undefined, dec = 2): string {
 /** Format a number with comma separators and fixed decimals. Returns "—" for null/NaN. */
 export function fmtCommas(n: number | null | undefined, dec = 2): string {
   if (n == null || Number.isNaN(n)) return "\u2014"
-  const s = n.toFixed(dec)
-  return s.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  const fixed = n.toFixed(dec)
+  const [intPart, fracPart] = fixed.split(".") as [string, string | undefined]
+  const formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  return fracPart !== undefined ? `${formatted}.${fracPart}` : formatted
 }
 
 /** Format a GBP currency value. Returns "—" for null/NaN. */

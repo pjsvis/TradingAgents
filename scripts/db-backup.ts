@@ -45,7 +45,8 @@ function backup(dbPath: string): string {
   // Use DatabaseFactory for consistent connection params, then VACUUM INTO
   const source = DatabaseFactory.connect(dbPath)
   try {
-    source.run(`VACUUM INTO '${outPath}'`)
+    const safePath = outPath.replace(/'/g, "''")
+    source.run(`VACUUM INTO '${safePath}'`)
   } finally {
     DatabaseFactory.close()
   }
@@ -109,7 +110,12 @@ const pruneIdx = args.indexOf("--prune")
 if (isList) {
   listBackups()
 } else if (pruneIdx !== -1 && args[pruneIdx + 1]) {
-  prune(parseInt(args[pruneIdx + 1], 10))
+  const days = parseInt(args[pruneIdx + 1], 10)
+  if (!Number.isFinite(days) || days < 0) {
+    console.error(`❌ Invalid --prune value: ${args[pruneIdx + 1]} (expected non-negative integer)`)
+    process.exit(1)
+  }
+  prune(days)
 } else {
   const dbPath = resolveDbPath(isTest)
   if (!existsSync(dbPath)) {

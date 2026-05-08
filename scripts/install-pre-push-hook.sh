@@ -57,7 +57,8 @@ else
 fi
 
 # Check if any generated diagrams changed
-NEW_DIAGRAMS=$(git status --short docs/diagrams/gn-* docs/diagrams/*.svg 2>/dev/null | grep -E "^\s*M|^\??" || true)
+NEW_DIAGRAMS=$(git status --porcelain docs/diagrams/gn-* docs/diagrams/*.svg 2>/dev/null \
+  | grep -E '^( M|M |A |AM|MM| D|D |\?\?)' || true)
 
 if [ -n "$NEW_DIAGRAMS" ]; then
     echo "[pre-push] Diagrams updated. Auto-committing..."

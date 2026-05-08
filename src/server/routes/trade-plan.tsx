@@ -72,7 +72,10 @@ router.get("/:ticker/html", async (c) => {
 
   const history = fetchPriceHistory(ticker)
   if (history.length === 0) {
-    return c.html(<div class="panel">No price history for {ticker}. Run <code>just sync-prices</code>.</div>)
+    return c.html(
+      <div class="panel">No price history for {ticker}. Run <code>just sync-prices</code>.</div>,
+      404,
+    )
   }
 
   const plan = calculateTradePlan({

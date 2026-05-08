@@ -236,6 +236,7 @@ scratchpad/
 
 # Bun
 node_modules/
+!src/lib/
 !src/server/lib/
 !scripts/lib/
 !src/cli/lib/

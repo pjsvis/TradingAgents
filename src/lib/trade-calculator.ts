@@ -74,7 +74,10 @@ export function calculateTradePlan(input: TradePlanInput): TradePlan {
   const hasSwingData = sorted.length >= 22
   const { swingLow, swingHigh } = hasSwingData
     ? findSwingHighLow(sorted)
-    : { swingLow: sorted[0]!.low, swingHigh: sorted[sorted.length - 1]!.high }
+    : {
+        swingLow: Math.min(...sorted.map((b) => b.low)),
+        swingHigh: Math.max(...sorted.map((b) => b.high)),
+      }
 
   const abMove = swingHigh - swingLow
 
