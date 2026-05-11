@@ -1,7 +1,7 @@
 # Current Work Plan
 
-**Last updated:** 2026-05-10
-**State:** ALERTS-PHASE2 next (ses_06bd59)
+**Last updated:** 2026-05-11
+**State:** ALERTS-PHASE3 next (ses_06bd59)
 **Session:** ses_06bd59
 
 ---
@@ -30,6 +30,17 @@
 - Just recipes + canonical docs
 
 ---
+
+## Completed (This Session — ses_06bd59)
+
+### ALERTS-PHASE2 ✓ — Custom User-Defined Alerts
+- SQLite `alerts` table with condition types: price_below/above, pct_change_day/week, price_cross
+- CRUD CLI: `trading alerts create|list|delete|check` subcommands
+- Alert matching engine (`alerts-engine.ts`) — pure function, no I/O
+- Telegram dispatch (`telegram.ts`) — Bot API, MarkdownV2, graceful degradation
+- Dashboard `/alerts` route + HTMX view with triggered banner + create form
+- `just check-alerts` / `just check-alerts --fire` recipes
+- Commit: `75f2263`
 
 ## Open Epics — Next Prioritization
 
