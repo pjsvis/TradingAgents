@@ -368,6 +368,10 @@ portfolio:
 alerts:
     bun run src/cli/main.ts alerts
 
+check-alerts FIRE="":
+    bun scripts/check-alerts.ts {{FIRE}}
+
+
 # Show contingency buylist — watchlist items with fair value targets
 [group("run")]
 buylist:
