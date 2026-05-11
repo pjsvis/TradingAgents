@@ -55,7 +55,7 @@ td comment <id> "@<session>: requesting handover"
 
 ---
 
-### Core Rule: Always Use a Work Session
+### Language Selection — TypeScript First
 
 This codebase is **primarily a Bun/TypeScript house.**
 

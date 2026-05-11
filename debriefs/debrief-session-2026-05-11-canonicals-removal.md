@@ -1,7 +1,7 @@
 ---
 date: 2026-05-11
 tags: [debrief, registry, playbook, cleanup]
-agent: pi
+updated_by: pi
 environment: local
 ---
 

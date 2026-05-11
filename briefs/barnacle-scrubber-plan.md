@@ -209,8 +209,8 @@ BARNACLE-SCRUBBER [epic]
 1. **LLM provider:** Use OpenRouter (existing `scripts/lib/llm.ts`) or a different model?
 2. **First-run target:** Should the scrubber's inaugural run target `playbooks/` only, or include `AGENTS.md` and `docs/runbook.md`?
 3. **Auto vs. interactive default:** Should `bun scripts/barnacle-scrubber.ts` require `--auto` to act, or should it default to non-interactive once the user has seen a clean dry-run?
-4. **Drydock location:** `drydock/` at repo root (gitignored), or `~/.tradingagents/drydock/` (machine-local)?
-5. **Deletion log location:** `BARNACLE_DELETION_LOG.md` at root, or `drydock/LOG.md` inside the archive?
+
+*(Drydock and deletion log locations resolved in `decisions/007-barnacle-drydock-location.md` — see there for details.)*
 
 ---
 
