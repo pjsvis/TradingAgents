@@ -42,11 +42,18 @@ interface DbAlert {
 }
 
 function rowToRule(row: DbAlert): AlertRule {
+  let condition: AlertCondition
+  try {
+    condition = JSON.parse(row.condition) as AlertCondition
+  } catch {
+    throw new Error(`Alert ${row.id} has malformed condition JSON: ${row.condition}`)
+  }
+
   return {
     id: row.id,
     name: row.name,
     ticker: row.ticker,
-    condition: JSON.parse(row.condition) as AlertCondition,
+    condition,
     platform: row.platform,
     severity: row.severity,
     message: row.message,

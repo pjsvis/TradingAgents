@@ -32,6 +32,10 @@ export type { AlertRule, TriggeredAlert } from "../lib/types.ts"
 
 export const alertsRouter = new Hono()
 
+// ── Database initialisation ──────────────────────────────────────────────────
+// Connect once per process; Hono handlers call .get() which requires connect() first
+DatabaseFactory.connect(cfg.portfolio.db)
+
 // ── JSON API ─────────────────────────────────────────────────────────────────
 
 /** GET /api/alerts — all alert rules */
@@ -50,7 +54,6 @@ alertsRouter.get("/:id", (c) => {
 
 /** POST /api/alerts — create a new alert rule */
 alertsRouter.post("/", async (c) => {
-  DatabaseFactory.connect(cfg.portfolio.db)
   let body: Record<string, unknown>
   try {
     body = await c.req.json()
@@ -117,7 +120,6 @@ alertsRouter.delete("/:id", (c) => {
 
 /** GET /api/alerts/check — run matching engine, return triggered alerts */
 alertsRouter.get("/check", (c) => {
-  DatabaseFactory.connect(cfg.portfolio.db)
   const db = DatabaseFactory.get()
 
   const alerts = listAlerts()
@@ -134,7 +136,6 @@ alertsRouter.get("/check", (c) => {
 
 /** POST /api/alerts/check/fire — run matching engine and dispatch to channels */
 alertsRouter.post("/check/fire", async (c) => {
-  DatabaseFactory.connect(cfg.portfolio.db)
   const db = DatabaseFactory.get()
 
   const alerts = listAlerts()
@@ -146,8 +147,12 @@ alertsRouter.post("/check/fire", async (c) => {
   if (triggered.length > 0) {
     const results = await dispatchAlerts(triggered)
     const ts = new Date().toISOString()
-    for (const ta of triggered) {
-      setLastTriggered(ta.alert.id, ts)
+    for (let i = 0; i < triggered.length; i++) {
+      const r = results[i]
+      const ta = triggered[i]
+      if (r !== undefined && r.sent && ta) {
+        setLastTriggered(ta.alert.id, ts)
+      }
     }
     return c.json({ dispatched: results, triggered })
   }
@@ -196,7 +201,6 @@ alertsRouter.get("/conditions", (c) => {
 
 /** GET /api/alerts/view/html — full alerts view */
 alertsRouter.get("/view/html", (c) => {
-  DatabaseFactory.connect(cfg.portfolio.db)
   const db = DatabaseFactory.get()
 
   const alerts = listAlerts()
@@ -243,7 +247,7 @@ alertsRouter.get("/table", (c) => {
         <td>
           <button
             class="btn-small btn-danger"
-            hx-delete="/api/alerts/{a.id}"
+            hx-delete={`/api/alerts/${a.id}`}
             hx-target="closest tr"
             hx-swap="delete"
             title="Delete"

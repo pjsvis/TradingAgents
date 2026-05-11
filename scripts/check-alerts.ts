@@ -117,8 +117,10 @@ if (failed.length > 0) {
   }
 }
 
-// Update last_triggered timestamps
+// Update last_triggered timestamps — only for successfully sent alerts
 const ts = new Date().toISOString()
-for (const ta of triggered) {
-  setLastTriggered(ta.alert.id, ts)
+for (let i = 0; i < triggered.length; i++) {
+  if (results[i]?.sent) {
+    setLastTriggered(triggered[i].alert.id, ts)
+  }
 }
