@@ -1,8 +1,13 @@
 # Current Work Plan
 
 **Last updated:** 2026-05-11
+<<<<<<< feat/multi-agent-worktree
 **State:** ALERTS-PHASE3 next (ses_06bd59)
 **Session:** ses_06bd59
+=======
+**State:** BARNACLE-SCRUBBER next, awaiting multi-agent ops conventions (ses_134041)
+**Session:** ses_134041
+>>>>>>> main
 
 ---
 
@@ -24,10 +29,17 @@
 - AGENTS.md — branching protocol added
 - All committed to `main` (0101eaa)
 
+<<<<<<< feat/multi-agent-worktree
 ### CANONICAL-REGISTRY ✓ — ses_0dd889
 - `canonicals/` created, seeded with 19 canonical playbooks
 - `reg-mine.ts`, `reg-import.ts`, `reg-promote.ts`, `reg-sync-scripts.ts`
 - Just recipes + canonical docs
+=======
+### Registry Infrastructure ✓ — ses_0dd889
+- Playbook registry scripts: `reg-mine.ts`, `reg-import.ts`, `reg-promote.ts`, `reg-sync-scripts.ts`
+- Just recipes for registry operations
+- Templates created for briefs, debriefs, decisions, playbooks
+>>>>>>> main
 
 ---
 
@@ -41,6 +53,7 @@
 - Dashboard `/alerts` route + HTMX view with triggered banner + create form
 - `just check-alerts` / `just check-alerts --fire` recipes
 - Commit: `75f2263`
+<<<<<<< feat/multi-agent-worktree
 
 ## Completed (This Session — ses_134041)
 
@@ -52,11 +65,14 @@
 - `AGENTS.md` — protocol rules updated (Rule 0–5, scripts replace manual td commands)
 - E2E tested: cross-write works, shared DB verified, cleanup clean
 - Filed [marcus/td#184](https://github.com/marcus/td/issues/184) — "td init should write .td-root in git worktrees"
+=======
+>>>>>>> main
 
 ---
 
 ## Open Epics — Next Prioritization
 
+<<<<<<< feat/multi-agent-worktree
 ### BARNACLE-SCRUBBER [P2] — Barnacle Removal System
 **Worktree infrastructure enables parallel agents.** See `briefs/barnacle-scrubber-plan.md`.
 - BRS-001 to BRS-007 (all P2 tasks, in progress)
@@ -68,6 +84,22 @@
 
 ### ALERTS-PHASE2 [P1] — Custom User-Defined Alerts
 ✅ Done (all 5 stories in_review). Awaiting review before merge.
+=======
+### BARNACLE-SCRUBBER [P1] — Barnacle Removal System
+**Next epic.** Non-interactive scrubber for playbook documentation.
+- Decisions resolved: drydock at `decisions/drydock/`, OpenRouter/Gemini2.5-flash, Gum escalation pipeline
+- Brief: `briefs/barnacle-scrubber-plan.md` | Decision: `decisions/007-barnacle-drydock-location.md`
+- TD epic: `ws-ab7d` (BRS-001 through BRS-007)
+- **Awaiting:** multi-agent ops conventions before coding starts
+
+### ALERTS-PHASE3 [P2] — Continuous Monitoring Daemon
+- `barnacle-scan.ts` monitoring daemon
+- Polling loop with configurable interval
+- Dashboard alert feed / SSE stream
+
+### Dashboard UX [P3]
+- Further UI improvements
+>>>>>>> main
 
 ---
 
@@ -76,6 +108,10 @@
 - **IG Demo**: Live, connected via skate credentials
 - **Communication channels**: Telegram account available — integration point for alerts
 - **Demo account balance**: CFD £10,062 | Spreadbet £10,000
+<<<<<<< feat/multi-agent-worktree
+=======
+- **Decision record:** `decisions/007-barnacle-drydock-location.md` — drydock at `decisions/drydock/`
+>>>>>>> main
 
 ---
 
@@ -85,9 +121,15 @@
 ```bash
 git status && git branch -v   # confirm on feature branch, not main
 just check                    # must be green
+<<<<<<< feat/multi-agent-worktree
 bun scripts/agent-orient.ts  # orientation: branch + td + in-flight
 bun scripts/agent-sync.ts   # sync: git state + file collisions
 # → Full protocol: playbooks/td-playbook.md
+=======
+td usage --new-session        # new identity
+td ws current                 # any active work?
+td reviewable                 # what needs review?
+>>>>>>> main
 ```
 
 **Worktree workflow (for new epics):**
@@ -106,7 +148,7 @@ just wt-delete my-epic               # clean deletion when done
 
 **Every change:**
 ```bash
-just check   # clean before touching
+just check   # must be clean before touching
 # ... make change ...
 just check   # must pass before commit
 ```
@@ -121,4 +163,8 @@ just check   # must pass before commit
 | React-style `style={{...}}` | Use `style="background:#fff3cd"` (CSS string) |
 | Extracting JSX before data layer | Always extract `lib/{route}-data.ts` first |
 | Forward-fix on broken state | Revert to last known-good, then diagnose |
+<<<<<<< feat/multi-agent-worktree
 | Working on `main` directly | Always branch first |
+=======
+| Working on `main` directly | Always branch first |
+>>>>>>> main

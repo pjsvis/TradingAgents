@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-11
 **Author:** Agent (orientation session)
-**Status:** Active — decisions resolved, implementation pending multi-agent ops conventions
+**Status:** Draft — for review
 
 ---
 
@@ -113,38 +113,29 @@ When the scrubber encounters a potential Chesterton's Fence:
 
 Format for escalation: structured YAML block (machine-readable for future automation).
 
-### 3. `/drydock/` Archive — `decisions/drydock/`
+### 3. `/drydock/` Archive
 
 ```
-decisions/drydock/
-├── INDEX.jsonl              # all drydocked blocks (append-only archive)
-├── pending.jsonl            # current scan's pending issues (Gum-presenter reads this)
-├── DELETION_LOG.md          # human-readable log (append-only)
-└── YYYY-MM-DD/
-    └── {source-relative-path}/
-        └── block-{id}.md    # individual barnacle text
+drydock/
+├── YYYY-MM-DD/
+│   ├── playbooks/services-playbook.md/
+│   │   ├── block-001.md   (barnacle text)
+│   │   └── block-002.md
+│   ├── docs/runbook.md/
+│   │   └── block-001.md
+│   └── AGENTS.md/
+│       └── block-001.md
+└── INDEX.jsonl         (searchable archive of all drydocked content)
 ```
 
 **INDEX.jsonl** schema:
 ```jsonl
-{"id":"BRS-001","source":"playbooks/services-playbook.md","line":12,"severity":"warning","type":"orphaned_reference","text":"...","justification":"Service 'auth-v1' decommissioned Jan 2026","drydocked_at":"2026-05-11T..."}
+{"drydock_path": "...", "source_file": "...", "source_line": N, "justification": "...", "drydocked_at": "ISO8601"}
 ```
 
-**pending.jsonl** (escalation queue for Gum presenter):
-```jsonl
-{"id":"BRS-001","source":"playbooks/services-playbook.md","line":12,"severity":"warning","type":"orphaned_reference","text":"...","justification":"..."}
-```
+### 4. Deletion Log — `BARNACLE_DELETION_LOG.md`
 
-**Escalation flow:**
-1. Scrubber writes `pending.jsonl` (non-interactive — all findings)
-2. Gum presenter reads `pending.jsonl`, renders Charm yes/no table
-3. User decisions written back to `pending.jsonl` (or a `_decisions.jsonl` sidecar)
-4. Scrubber reads decisions, applies approved changes
-5. Approved barnacles moved to `decisions/drydock/YYYY-MM-DD/` + indexed in `INDEX.jsonl`
-
-### 4. Deletion Log — `decisions/drydock/DELETION_LOG.md`
-
-Append-only human-readable log.
+Generated at repo root (gitignored or separate from main docs).
 
 ```markdown
 # Barnacle Deletion Log
@@ -154,10 +145,8 @@ Append-only human-readable log.
 | Source | Block | Justification | Action |
 |--------|-------|---------------|--------|
 | playbooks/services-playbook.md | block-001 | "Service 'auth-v1' decommissioned Jan 2026" | drydocked |
-| playbooks/ig-api-playbook.md | block-002 | "Old path reference 'server/lib' replaced by src/server/lib" | slimmed |
+| AGENTS.md | block-002 | "Old path reference 'server/lib' replaced by src/server/lib" | slimmed |
 ```
-
-**Rule:** Do not edit past entries. Only append.
 
 ### 5. Re-Integration Protocol (Recovery Flow)
 
@@ -215,19 +204,13 @@ BARNACLE-SCRUBBER [epic]
 
 ---
 
-## Decision Record
+## Open Questions (for User)
 
-| Decision | Choice |
-|----------|--------|
-| LLM provider | OpenRouter (via `scripts/lib/llm.ts`), `google/gemini-2.5-flash-lite-preview-09-2025` |
-| First-run target | `playbooks/` only — learn craft here before moving to system docs |
-| Interaction mode | Non-interactive by default; Gum-based escalation pipeline presents pending.jsonl via Charm for human yes/no |
-| Drydock location | `decisions/drydock/` (gitignored) — same location as other decision records |
-| Deletion log | `decisions/drydock/DELETION_LOG.md` (append-only) |
-| INDEX format | `decisions/drydock/INDEX.jsonl` — one row per drydocked block |
-| Pending queue | `decisions/drydock/pending.jsonl` — Gum-presenter reads this for interactive review |
+1. **LLM provider:** Use OpenRouter (existing `scripts/lib/llm.ts`) or a different model?
+2. **First-run target:** Should the scrubber's inaugural run target `playbooks/` only, or include `AGENTS.md` and `docs/runbook.md`?
+3. **Auto vs. interactive default:** Should `bun scripts/barnacle-scrubber.ts` require `--auto` to act, or should it default to non-interactive once the user has seen a clean dry-run?
 
-**Decision doc:** `decisions/007-barnacle-drydock-location.md`
+*(Drydock and deletion log locations resolved in `decisions/007-barnacle-drydock-location.md` — see there for details.)*
 
 ---
 
@@ -235,8 +218,7 @@ BARNACLE-SCRUBBER [epic]
 
 | Metric | Target |
 |--------|--------|
-| Word count reduction in target playbooks | 10–20% |
+| Word count reduction in target files | 10–20% |
 | Zero logic breakage in first run | Required |
 | Drydock → Retained ratio | Track for calibration |
 | Anomaly escalation rate | <5% of barnacles (means criteria are well-tuned) |
-| pending.jsonl → approved rate | >80% (means scrubber is not too aggressive) |
