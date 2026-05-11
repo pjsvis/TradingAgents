@@ -94,7 +94,7 @@ function formatAlertForTelegram(alert: TriggeredAlert): string {
 
   const lines: string[] = [
     `${severity} *ALERT — ${rule.severity.toUpperCase()}*`,
-    `📛 ${escapeMarkdownV2(rule.name)}`,
+    `📛 ${rule.name}`,
     `📈 ${rule.ticker ?? "(portfolio)"}`,
     "",
     message,

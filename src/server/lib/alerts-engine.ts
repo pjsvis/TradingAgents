@@ -106,7 +106,12 @@ export function matchAlerts(
       if (!priceData) return null
 
       const pctChange = priceData.closePrev
-        ? ((priceData.close - priceData.closePrev) / priceData.closePrev) * 100
+        ? (() => {
+            const c = parseFloat(String(priceData.close))
+            const p = parseFloat(String(priceData.closePrev))
+            if (!Number.isFinite(c) || !Number.isFinite(p) || p === 0) return undefined
+            return ((c - p) / p) * 100
+          })()
         : undefined
 
       const ctx: MatchContext = {
