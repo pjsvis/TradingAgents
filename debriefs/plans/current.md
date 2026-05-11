@@ -1,8 +1,8 @@
 # Current Work Plan
 
 **Last updated:** 2026-05-11
-**State:** ALERTS-PHASE3 next (ses_06bd59)
-**Session:** ses_06bd59
+**State:** BARNACLE-SCRUBBER next, awaiting multi-agent ops conventions (ses_134041)
+**Session:** ses_134041
 
 ---
 
@@ -24,10 +24,10 @@
 - AGENTS.md — branching protocol added
 - All committed to `main` (0101eaa)
 
-### CANONICAL-REGISTRY ✓ — ses_0dd889
-- `canonicals/` created, seeded with 19 canonical playbooks
-- `reg-mine.ts`, `reg-import.ts`, `reg-promote.ts`, `reg-sync-scripts.ts`
-- Just recipes + canonical docs
+### Registry Infrastructure ✓ — ses_0dd889
+- Playbook registry scripts: `reg-mine.ts`, `reg-import.ts`, `reg-promote.ts`, `reg-sync-scripts.ts`
+- Just recipes for registry operations
+- Templates created for briefs, debriefs, decisions, playbooks
 
 ---
 
@@ -42,14 +42,16 @@
 - `just check-alerts` / `just check-alerts --fire` recipes
 - Commit: `75f2263`
 
+---
+
 ## Open Epics — Next Prioritization
 
-### ALERTS-PHASE2 [P1] — Custom User-Defined Alerts
-**Next epic to start.** Custom alerts with Telegram/comms integration.
-- Alerts table in SQLite (custom alert rules)
-- CRUD CLI: `trading/commands/alerts.ts` enhancement
-- Dashboard view for custom alerts
-- Notification channels: Telegram, email, webhook (stretch)
+### BARNACLE-SCRUBBER [P1] — Barnacle Removal System
+**Next epic.** Non-interactive scrubber for playbook documentation.
+- Decisions resolved: drydock at `decisions/drydock/`, OpenRouter/Gemini2.5-flash, Gum escalation pipeline
+- Brief: `briefs/barnacle-scrubber-plan.md` | Decision: `decisions/007-barnacle-drydock-location.md`
+- TD epic: `ws-ab7d` (BRS-001 through BRS-007)
+- **Awaiting:** multi-agent ops conventions before coding starts
 
 ### ALERTS-PHASE3 [P2] — Continuous Monitoring Daemon
 - `barnacle-scan.ts` monitoring daemon
@@ -66,6 +68,7 @@
 - **IG Demo**: Live, connected via skate credentials
 - **Communication channels**: Telegram account available — integration point for alerts
 - **Demo account balance**: CFD £10,062 | Spreadbet £10,000
+- **Decision record:** `decisions/007-barnacle-drydock-location.md` — drydock at `decisions/drydock/`
 
 ---
 
@@ -87,7 +90,7 @@ td reviewable                 # what needs review?
 
 **Every change:**
 ```bash
-just check   # clean before touching
+just check   # must be clean before touching
 # ... make change ...
 just check   # must pass before commit
 ```
