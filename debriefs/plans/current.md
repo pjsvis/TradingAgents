@@ -42,22 +42,32 @@
 - `just check-alerts` / `just check-alerts --fire` recipes
 - Commit: `75f2263`
 
+## Completed (This Session — ses_134041)
+
+### Multi-Agent Worktree Infrastructure ✓ — ses_134041
+- `scripts/worktree-init.ts` — create/delete/list worktrees with `.td-root` for shared `.todos/`
+- `scripts/agent-*.ts` — agent coordination: orient, claim, log, handoff, sync
+- `playbooks/td-playbook.md` — multi-agent protocol (worktree model)
+- `Justfile` — `[agent]` + `[worktree]` groups (15 facade recipes)
+- `AGENTS.md` — protocol rules updated (Rule 0–5, scripts replace manual td commands)
+- E2E tested: cross-write works, shared DB verified, cleanup clean
+- Filed [marcus/td#184](https://github.com/marcus/td/issues/184) — "td init should write .td-root in git worktrees"
+
+---
+
 ## Open Epics — Next Prioritization
 
-### ALERTS-PHASE2 [P1] — Custom User-Defined Alerts
-**Next epic to start.** Custom alerts with Telegram/comms integration.
-- Alerts table in SQLite (custom alert rules)
-- CRUD CLI: `trading/commands/alerts.ts` enhancement
-- Dashboard view for custom alerts
-- Notification channels: Telegram, email, webhook (stretch)
+### BARNACLE-SCRUBBER [P2] — Barnacle Removal System
+**Worktree infrastructure enables parallel agents.** See `briefs/barnacle-scrubber-plan.md`.
+- BRS-001 to BRS-007 (all P2 tasks, in progress)
 
 ### ALERTS-PHASE3 [P2] — Continuous Monitoring Daemon
-- `barnacle-scan.ts` monitoring daemon
+- `barnacle-scan.ts` monitoring daemon (reuses BRS-001 scanner)
 - Polling loop with configurable interval
 - Dashboard alert feed / SSE stream
 
-### Dashboard UX [P3]
-- Further UI improvements
+### ALERTS-PHASE2 [P1] — Custom User-Defined Alerts
+✅ Done (all 5 stories in_review). Awaiting review before merge.
 
 ---
 
@@ -75,12 +85,21 @@
 ```bash
 git status && git branch -v   # confirm on feature branch, not main
 just check                    # must be green
-td usage --new-session        # new identity
-td ws current                 # any active work?
-td reviewable                 # what needs review?
+bun scripts/agent-orient.ts  # orientation: branch + td + in-flight
+bun scripts/agent-sync.ts   # sync: git state + file collisions
+# → Full protocol: playbooks/td-playbook.md
 ```
 
-**Branching rule:**
+**Worktree workflow (for new epics):**
+```bash
+just wt-create my-epic --base main   # creates worktree + .td-root
+cd ../TradingAgents-my-epic          # work in isolated directory
+td usage --new-session              # own td session, shared DB
+# ... work ...
+just wt-delete my-epic               # clean deletion when done
+```
+
+**Branching rule:****
 - On `main` with code to write → `git checkout -b feat/<name>` first
 - Never commit directly to `main`
 - Merge via PR → forces pre-PR checklist

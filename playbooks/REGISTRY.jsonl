@@ -14,3 +14,5 @@
 {"file":"trade-calculator-testing-playbook.md","date":"2026-05-08","status":"project","summary":"Trade calculator testing: unit tests, integration tests, IG instrument validation","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
 {"file":"just-playbook.md","date":"2026-05-09","status":"canonical","summary":"Just Playbook","meta":{"source":"canonical","mining_candidate":false,"mining_note":null,"last_mined":null}}
 {"file":"briefs-playbook.md","date":"2026-05-09","status":"canonical","summary":"Briefs Playbook","meta":{"source":"canonical","mining_candidate":false,"mining_note":null,"last_mined":null}}
+{"file":"td-playbook.md","date":"2026-05-11","status":"project","summary":"Multi-agent coordination: worktree model, claim-before-touch, session startup, handoff protocol","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
+{"file":"agent-voice-convention.md","date":"2026-05-11","status":"project","summary":"How ctx (AI assistant, Edinburgh Protocol) and pjsvis present themselves when posting to Marcus repos","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
