@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-12
 **Epic ID:** SCRIPTS-001
-**Status:** Open
+**Status:** Superseded — migration was already complete
 **Priority:** P2
 **Language:** TypeScript (Bun runtime)
 **Location:** `scripts/` → `src/`
