@@ -1,3 +1,7 @@
+/**
+ * Benchmark view — shell that loads /api/benchmark/html via HTMX.
+ */
+
 /** @jsxImportSource hono/jsx */
 
 export function BenchmarkView() {

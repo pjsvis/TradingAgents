@@ -102,6 +102,14 @@ function extractDocComment(residual: string): string | null {
   return cleaned || null
 }
 
+/**
+ * Extract description from citty defineCommand({ meta: { description } }).
+ */
+function extractCittyMeta(content: string): string | null {
+  const match = content.match(/meta:\s*\{\s*name:[^}]*description:\s*"([^"]+)"/)
+  return match ? match[1] : null
+}
+
 /** Truncate to maxLen at a word boundary. */
 function truncate(doc: string, maxLen: number): string {
   if (doc.length <= maxLen) return doc
@@ -131,7 +139,7 @@ function main() {
     try {
       const content = readFileSync(srcPath, "utf8")
       const residual = stripPrefix(content)
-      doc = extractDocComment(residual)
+      doc = extractDocComment(residual) ?? extractCittyMeta(content)
     } catch {
       // file not readable — skip
     }

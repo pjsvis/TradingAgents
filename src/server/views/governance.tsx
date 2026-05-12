@@ -1,3 +1,7 @@
+/**
+ * Governance view — shell that loads /api/governance/html via HTMX.
+ */
+
 /** @jsxImportSource hono/jsx */
 
 export function GovernanceView() {
