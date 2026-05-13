@@ -38,48 +38,50 @@ interface EnrichedEntry extends IndexEntry {
 function stripPrefix(content: string): string {
   let lines = content.split("\n")
   let pos = 0
+  const drop = new Set<number>()
 
   // 1. Shebang
-  if (lines[pos]?.startsWith("#!")) pos++
-
-  // 2. @jsxImportSource pragma block
-  if (lines[pos]?.startsWith("/**") && lines[pos].includes("@jsxImportSource")) {
-    while (pos < lines.length && !lines[pos].trim().startsWith("*/")) pos++
-    pos++ // consume the closing */
-    lines = lines.slice(pos)
+  if (lines[pos]?.startsWith("#!")) {
+    drop.add(pos)
+    lines = lines.slice(pos + 1)
     pos = 0
   }
 
-  // 3. Collect import lines (including multi-line imports with { }) until first non-import
+  // 2. @jsxImportSource pragma block — always starts with `/** @jsxImportSource ... */`
+  if (lines[pos]?.startsWith("/**") && lines[pos].includes("@jsxImportSource")) {
+    while (pos < lines.length && !lines[pos].trim().includes("*/")) {
+      drop.add(pos)
+      pos++
+    }
+    // +1: skip the closing */ line; slice from current array position
+    lines = lines.slice(pos + 1)
+    pos = 0
+  }
+
+  // 3. Strip import/export lines (including multi-line with { })
   let inBlock = false
-  const importEnds: Set<number> = new Set()
 
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i].trim()
 
-    if (l.startsWith("import ")) {
-      if (l.includes("{") && !l.includes("}")) {
-        inBlock = true
-      }
-      if (l.endsWith(";") || l.endsWith(",")) {
-        // single-line or closing of multi-line
-        importEnds.add(i)
-        if (!l.endsWith(",")) inBlock = false
-      } else if (!l.endsWith(";")) {
-        // multi-line start
-        inBlock = true
-      }
-    } else if (inBlock && (l.includes("}") || l.includes(";"))) {
-      importEnds.add(i)
-      inBlock = false
-    } else if (!l.startsWith("import ") && !l.startsWith("export ")) {
-      // Stop at first non-import, non-export line
-      break
+    if (inBlock) {
+      drop.add(i)
+      if (l.includes("}") || l.includes(";")) inBlock = false
+      continue
     }
+
+    if (l.startsWith("import ") || l.startsWith("export ")) {
+      drop.add(i)
+      if (l.includes("{") && !l.includes("}")) inBlock = true
+      continue
+    }
+
+    // First non-import line — stop
+    break
   }
 
   const residual = lines
-    .filter((_, i) => !importEnds.has(i))
+    .filter((_, i) => !drop.has(i))
     .join("\n")
     .trimStart()
 
