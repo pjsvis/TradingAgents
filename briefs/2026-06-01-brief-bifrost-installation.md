@@ -432,3 +432,52 @@ npx -y @maximhq/bifrost --port 8081
 - **BiFrost Enterprise**: https://www.getmaxim.ai/bifrost/enterprise
 - Decision: `decisions/006-bifrost-local-ai-router.md`
 - TradingAgents: `scripts/py/analyze_stream.py`
+---
+
+## Working Implementation: TypeScript/Bun Proxy
+
+A production-ready TypeScript proxy is implemented in `scripts/bifrost-proxy.ts`. This was verified end-to-end with a COP TradingAgents analysis on 2026-05-13.
+
+**Verified results:**
+- 39 API calls routed through proxy → OpenRouter
+- Total cost: $0.00002 (~$0.02 per 1,000 calls via DeepSeek V4 Flash)
+- All TradingAgents agents worked: market, news, fundamentals, debate, trader
+- Decision: **Hold** (COP)
+
+**Start proxy:**
+```bash
+OPENROUTER_API_KEY="$(skate get open_api_key)" \
+BIFROST_PROVIDER=openrouter \
+bun run scripts/bifrost-proxy.ts
+```
+
+**Run analysis through proxy:**
+```bash
+OPENROUTER_API_KEY="$(skate get open_api_key)" \
+python3 scripts/py/analyze_stream.py COP --debates 1 \
+  --llm-api-base "http://localhost:8080/v1"
+```
+
+**Check cost log:**
+```bash
+curl http://localhost:8080/costs
+# → {"total_cost": 0.00002, "total_requests": 39, ...}
+```
+
+**Endpoints:**
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Health check |
+| GET | `/costs` | Cost summary (total, by model) |
+| POST | `/v1/chat/completions` | OpenAI Chat Completions proxy |
+| POST | `/v1/responses` | OpenAI Responses API proxy |
+| GET | `/v1/models` | Model list |
+
+**Environment variables:**
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `OPENROUTER_API_KEY` | — | Required for OpenRouter routes |
+| `BIFROST_PROVIDER` | `openrouter` | `openrouter` \| `ollama` \| `direct` |
+| `BIFROST_DRY_RUN` | `0` | Set to `1` to log without forwarding |
+| `BIFROST_SPEND_LIMIT` | `1.00` | Max USD per request |
+| `BIFROST_COST_LOG` | `~/.tradingagents/bifrost-cost-log.jsonl` | Cost log path |

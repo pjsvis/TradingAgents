@@ -18,6 +18,7 @@
 {"file":"2026-06-01-brief-bifrost-installation.md","date":"2026-05-13","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"alerts-phase2.md","date":"2026-05-11","status":"done","summary":"ALERTS-PHASE2: SQLite alerts table, CRUD CLI, matching engine, Telegram dispatch, dashboard route","meta":{"epic":"td-cbb2e9"}}
 {"file":"barnacle-scrubber-plan.md","date":"2026-05-11","status":"done","summary":"BARNACLE-SCRUBBER: 7-task implementation plan — ingest, LLM scan, slim phase, anomaly escalation, re-integration, deletion log, just recipes","meta":{"epic":"td-6fed05","barnacle":true}}
+{"file":"brief-alert-fire-integration.md","date":"2026-05-13","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"brief-dashboard-2026-05-02.md","date":"2026-05-02","status":"done","summary":"Dashboard v1 foundation: Bun/Hono server, HTMX frontend, SQLite persistence","meta":{"epic":null}}
 {"file":"brief-dashboard-phase2-2026-05-02.md","date":"2026-05-02","status":"done","summary":"Dashboard Phase 2: holdings, exits, governance, benchmark, feedback tabs","meta":{"epic":null}}
 {"file":"brief-doc-review-recommendations-2026-05-08.md","date":"2026-05-08","status":"done","summary":"Documentation review: path drift fix, TA_DASHBOARD_PORT wiring, hygiene epic decomposition","meta":{"epic":null}}
@@ -35,4 +36,3 @@
 {"file":"epic-unified-cli.md","date":"2026-05-07","status":"done","summary":"Unified Trading CLI with citty framework: plan command, platform config, IG integration","meta":{"epic":"td-d19b7c"}}
 {"file":"TEMPLATE.md","date":"2026-05-11","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"upstream-issue-debate-state-logging.md","date":"2026-05-07","status":"done","summary":"Upstream issue: state log serialization omits debate counter fields in TradingAgents","meta":{"epic":null}}
-{"file":"2026-05-12-brief-alert-fire-integration.md","date":"2026-05-12","status":"open","summary":"Induced requirement from code registry gap-finding: POST /api/alerts/fire route to wire alert matching engine to Telegram dispatch via HTTP","meta":{"epic":"ALERT-FIRE-001","induced_from":"code/INDEX.jsonl","priority":"P2"}}
