@@ -22,6 +22,7 @@
  */
 
 import { appendFileSync, existsSync, mkdirSync } from "node:fs"
+import { homedir } from "node:os"
 import { join } from "node:path"
 import { serve } from "@hono/node-server"
 import { Hono } from "hono"
@@ -62,8 +63,7 @@ const CONFIG = {
   provider: process.env.BIFROST_PROVIDER ?? "openrouter",
   dryRun: process.env.BIFROST_DRY_RUN === "1",
   costLogPath:
-    process.env.BIFROST_COST_LOG ??
-    join(process.env.HOME ?? "~", ".tradingagents", "bifrost-cost-log.jsonl"),
+    process.env.BIFROST_COST_LOG ?? join(homedir(), ".tradingagents", "bifrost-cost-log.jsonl"),
   spendLimit: parseFloat(process.env.BIFROST_SPEND_LIMIT ?? "1.00"),
   openRouterKey: process.env.OPENROUTER_API_KEY ?? "",
 }

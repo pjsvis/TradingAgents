@@ -1,5 +1,5 @@
 /**
- * Benchmark view — shell that loads /api/benchmark/html via HTMX.
+ * Benchmark view — shell that loads /api/benchmark/table via HTMX.
  */
 
 /** @jsxImportSource hono/jsx */

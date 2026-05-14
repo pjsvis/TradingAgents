@@ -1,5 +1,5 @@
 /**
- * Exits view — shell that loads /api/exits/html via HTMX.
+ * Exits view — shell that loads /api/positions/exits/html via HTMX.
  */
 
 /** @jsxImportSource hono/jsx */

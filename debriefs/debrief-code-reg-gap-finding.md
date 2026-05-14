@@ -47,7 +47,7 @@ The `server/routes/alerts.tsx` provides CRUD (list, create, delete) but not the 
 
 ### 3. No dedicated spreadbets view
 
-`spreadbets` is a CLI command. Is there a dedicated `SpreadBetPositionsView`? Let me check.
+`spreadbets` is a CLI command. No dedicated `SpreadBetPositionsView` found — gap confirmed.
 
 ### 4. IG commands are CLI-only
 
@@ -69,6 +69,6 @@ This is an induced requirement — the system already has all the pieces (alert 
 
 The code registry worked. Reading `code/INDEX.jsonl` surfaced a real, actionable gap in under 30 minutes. The alert matching engine has no HTTP trigger — that's a concrete gap the system induced by existing.
 
-The brief is `briefs/epic-alert-fire-integration.md` (if written). The system induced it.
+The brief is `briefs/brief-alert-fire-integration.md`. The system induced it.
 
 **Verdict: The registry enables induced requirements. It works.**

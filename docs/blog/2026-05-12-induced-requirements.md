@@ -92,7 +92,7 @@ The document registry system turned out to be the right infrastructure for induc
 | **Consistency** | The same language — briefs, debriefs, decisions — is used whether the requirement is imposed or induced. Origin doesn't change the process. |
 | **Audit** | You can see the history of what was induced, when, and why. Did the agent find the right gaps? Was the brief accurate? |
 
-The code registry (`scripts/code-reg-sync.ts` → `code/INDEX.jsonl`) extends this to the last major surface that wasn't in the feedback loop: the code itself. Once code is indexed, the loop closes. Documents and code — both visible, both inducing requirements when gaps appear.
+The code registry (`scripts/reg-sync.ts` → `code/INDEX.jsonl`) extends this to the last major surface that wasn't in the feedback loop: the code itself. Once code is indexed, the loop closes. Documents and code — both visible, both inducing requirements when gaps appear.
 
 ## The Bottom Line
 

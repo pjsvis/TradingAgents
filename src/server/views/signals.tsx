@@ -1,5 +1,5 @@
 /**
- * Signals view — shell that loads /api/signals/html via HTMX.
+ * Signals view — shell that loads /api/signals/view/html via HTMX.
  */
 
 /** @jsxImportSource hono/jsx */

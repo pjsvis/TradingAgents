@@ -1,5 +1,5 @@
 /**
- * Governance view — shell that loads /api/governance/html via HTMX.
+ * Governance view — loads /api/governance/rules/html + /api/governance/violations/html via HTMX.
  */
 
 /** @jsxImportSource hono/jsx */
