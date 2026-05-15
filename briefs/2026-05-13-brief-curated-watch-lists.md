@@ -106,10 +106,12 @@ Structured output in both CLI and dashboard:
 Fetch recent news and analyst sentiment for watchlist candidates using `defuddle`:
 
 - [ ] **R07.1:** Fetch recent headlines for a ticker via `defuddle` (e.g., Yahoo Finance news page)
-- [ ] **R07.2:** Store headline summaries + sentiment score in `watchlist_enrichment` table
+- [ ] **R07.2:** Store each headline as a separate row in `watchlist_news_sentiment`; associate via `enrichment_id` foreign key to `watchlist_enrichment` (ticker + date)
 - [ ] **R07.3:** CLI command `trading screen enrich --sentiment --ticker <ticker>` to fetch and score recent news
 - [ ] **R07.4:** Screening engine includes sentiment score in priority ranking
 - [ ] **R07.5:** Dashboard shows news sentiment indicator (bullish/neutral/bearish) per candidate
+
+**Data model:** Headlines go to `watchlist_news_sentiment` (one row per headline, not aggregated JSON). The parent `watchlist_enrichment` row holds fundamentals. TTL: prune headlines older than 30 days via `DELETE FROM watchlist_news_sentiment WHERE published_date < date('now', '-30 days')`. The parent row is retained; only children are pruned.
 
 **Implementation note:** `defuddle` returns clean Markdown. Parse with regex or simple extraction. Respect rate limits — enforce minimum delay between fetches. Cache all results with 24h TTL.
 
@@ -121,6 +123,8 @@ Fetch recent news and analyst sentiment for watchlist candidates using `defuddle
 |-------------|-------------|
 | R01.1 | `trading screen create` inserts a row; `trading screen list` shows it |
 | R02.1–2 | `trading screen enrich --ticker AAPL` populates enrichment table |
+| R02.4 | `trading screen enrich --ticker AAPL` triggers `defuddle` fetch; response includes `analyst_name`, `rating`, `price_target` fields |
+| R02.5 | Second `trading screen enrich --ticker AAPL` within TTL returns cached data (no `defuddle` call); after TTL expires, triggers fresh fetch |
 | R03.1–3 | `trading screen run` outputs matched candidates with match reasons |
 | R04.1 | Output table matches format spec in R04.1 |
 | R04.2 | Dashboard loads curated watchlist tab with screening results |
@@ -152,7 +156,7 @@ trading screen run
 
 ## Dependencies
 
-- `src/server/lib/schema.sql` — add `screening_rules`, `watchlist_enrichment` tables
+- `src/server/lib/schema.sql` — add `screening_rules`, `watchlist_enrichment`, `watchlist_news_sentiment` tables
 - `src/server/lib/prospects-data.ts` — extend for enrichment data access
 - `src/server/lib/alerts-engine.ts` — pattern reference for condition matching
 - `scripts/get_price.ts` — existing Yahoo Finance price fetch, can extend for fundamentals
@@ -168,8 +172,9 @@ trading screen run
 
 - Screening rules can be created, listed, and deleted via CLI
 - Enrichment pipeline fetches fundamental data for any watchlist candidate
+- News sentiment stores one row per headline with FK to enrichment
 - Screening engine evaluates rules and produces a prioritised list
-- Dashboard shows curated watchlist with screening results
+- Dashboard shows curated watchlist with screening results and sentiment indicator
 - Weekly cadence is configurable and runnable via `just`
 - Existing watchlist and alerts systems continue to work unchanged
 
@@ -180,5 +185,6 @@ trading screen run
 - Real-time price streaming (existing daily OHLCV is sufficient)
 - Machine learning model for candidate scoring (rule-based only)
 - Web scraping of analyst research (manual input of conviction lists)
-- Integration with external paid APIs (Yahoo Finance + IG + public web via defuddle only)
+- Paid external APIs (Yahoo Finance, IG, defuddle are free/public only; paid data feeds not in scope)
+- Allowed external sources: Yahoo Finance, IG, public web via defuddle
 - Live account execution based on screening results (human approval required)
