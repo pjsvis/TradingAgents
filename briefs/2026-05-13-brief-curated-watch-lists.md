@@ -33,10 +33,12 @@ Separately, the `alerts` engine (`alerts-db.ts`, `alerts-engine.ts`) provides a 
 **What's missing:**
 
 - A screening engine that evaluates candidates against configurable criteria (fundamental ratios, sector conditions, geopolitical flags)
-- Automated enrichment that fetches fundamental data (forward P/E, EPS growth, operating margin, beta) for watchlist candidates
+- Automated enrichment that fetches fundamental data (forward P/E, EPS growth, operating margin, beta) for watchlist candidates via Yahoo Finance + IG API
+- **Web-based enrichment** via `defuddle` (built-in web fetch) for analyst ratings, price targets, news sentiment, and geopolitical risk signals
 - A CLI command to run screening and generate curated lists
 - Dashboard views to review screening results and promote candidates through stages
 - Scheduled screening runs (weekly cadence)
+- News sentiment scoring for watchlist candidates
 
 ---
 
@@ -66,6 +68,8 @@ Fetch fundamental data for watchlist candidates from Yahoo Finance (via existing
 - [ ] **R02.1:** `screening-enrich.ts` script (or module) that fetches forward P/E, EPS growth, operating margin, 1Y beta, and price-to-sales for a given ticker
 - [ ] **R02.2:** Store enriched data in a `watchlist_enrichment` table (keyed by ticker + date)
 - [ ] **R02.3:** CLI command `trading screen enrich [--all | --ticker <ticker>]` to populate enrichment data
+- [ ] **R02.4:** Use `defuddle` (web_fetch) to fetch analyst ratings and price targets from public financial sources (e.g., finviz, Yahoo Finance analyst page)
+- [ ] **R02.5:** Cache enrichment results with TTL to avoid redundant fetches
 
 ### R03: Screening Engine
 
@@ -97,6 +101,18 @@ Structured output in both CLI and dashboard:
 - [ ] **R06.2:** CLI flag `--geopolitical` on `trading screen run` to include conflict-zone filters
 - [ ] **R06.3:** Dashboard indicator showing which prospects have non-interdicted supply chains
 
+### R07: News Sentiment Enrichment
+
+Fetch recent news and analyst sentiment for watchlist candidates using `defuddle`:
+
+- [ ] **R07.1:** Fetch recent headlines for a ticker via `defuddle` (e.g., Yahoo Finance news page)
+- [ ] **R07.2:** Store headline summaries + sentiment score in `watchlist_enrichment` table
+- [ ] **R07.3:** CLI command `trading screen enrich --sentiment --ticker <ticker>` to fetch and score recent news
+- [ ] **R07.4:** Screening engine includes sentiment score in priority ranking
+- [ ] **R07.5:** Dashboard shows news sentiment indicator (bullish/neutral/bearish) per candidate
+
+**Implementation note:** `defuddle` returns clean Markdown. Parse with regex or simple extraction. Respect rate limits — enforce minimum delay between fetches. Cache all results with 24h TTL.
+
 ---
 
 ## How to Verify
@@ -110,6 +126,8 @@ Structured output in both CLI and dashboard:
 | R04.2 | Dashboard loads curated watchlist tab with screening results |
 | R05.1–2 | `just screen-weekly` runs without error |
 | R06.1–3 | `--geopolitical` flag filters candidates correctly |
+| R07.1–5 | `trading screen enrich --sentiment --ticker AAPL` populates news + sentiment |
+| R07.4–5 | Screening includes sentiment; dashboard shows indicator |
 
 **End-to-end test:**
 ```bash
@@ -119,11 +137,15 @@ trading watchlist add AAPL --thesis "Strong cash flow, AI tailwinds"
 # Enrich with fundamental data
 trading screen enrich --ticker AAPL
 
+# Fetch news sentiment
+trading screen enrich --sentiment --ticker AAPL
+
 # Run screening
 trading screen run
 
 # Expected: AAPL appears if it meets defined criteria
 # Expected: priority score displayed
+# Expected: sentiment indicator shows bullish/neutral/bearish
 ```
 
 ---
@@ -134,6 +156,7 @@ trading screen run
 - `src/server/lib/prospects-data.ts` — extend for enrichment data access
 - `src/server/lib/alerts-engine.ts` — pattern reference for condition matching
 - `scripts/get_price.ts` — existing Yahoo Finance price fetch, can extend for fundamentals
+- `defuddle` (web_fetch) — built-in web fetching for news and analyst data (see pi docs)
 - `src/lib/ig-client.ts` — alternative data source for instrument metadata
 - `src/server/lib/db.ts` — `DatabaseFactory` for all database access
 - `src/cli/commands/` — new `screen.ts` command alongside existing `watchlist.ts`, `alerts-*.ts`
@@ -157,5 +180,5 @@ trading screen run
 - Real-time price streaming (existing daily OHLCV is sufficient)
 - Machine learning model for candidate scoring (rule-based only)
 - Web scraping of analyst research (manual input of conviction lists)
-- Integration with external screening APIs (Yahoo Finance + IG only)
+- Integration with external paid APIs (Yahoo Finance + IG + public web via defuddle only)
 - Live account execution based on screening results (human approval required)
