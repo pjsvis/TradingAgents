@@ -15,12 +15,14 @@
 {"file":"just/just-command-runner-best-practices.md","date":"2026-05-08","status":"active","summary":"Best practices for just command runner: shebangs, doc attributes, modules","meta":{"type":"reference","topic":"just"}}
 {"file":"just/just-global-and-user.md","date":"2026-05-08","status":"active","summary":"Global and user-level just command configuration patterns","meta":{"type":"reference","topic":"just"}}
 {"file":"just/just-project-level-commands.md","date":"2026-05-08","status":"active","summary":"Project-level just commands: per-directory Justfiles and module imports","meta":{"type":"reference","topic":"just"}}
+{"file":"just/screen-recipes.md","date":"2026-05-18","status":"active","summary":"Just recipes for screening cadence — just screen-weekly walkthrough, cron line, and failure modes","meta":{"type":"reference","topic":"just","tags":["WATCH-001","screening","cron"]}}
 {"file":"karpathy-claude.md","date":"2026-05-11","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"portfolio-snapshot-2026-05-07.md","date":"2026-05-07","status":"active","summary":"Real portfolio holdings and account balances as of 2026-05-07","meta":{"type":"snapshot","topic":"portfolio"}}
 {"file":"register-continuous-self-test.md","date":"2026-05-12","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"research-registry.md","date":"2026-05-15","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"runbook.md","date":"2026-05-10","status":"active","summary":"Operations manual: CLI reference, E2E workflows, IG demo trading, dashboard, config, troubleshooting","meta":{"type":"manual","topic":"operations"}}
 {"file":"schema/unified-registry.md","date":"2026-05-08","status":"active","summary":"Unified JSONL schema for all document indexes in the repository","meta":{"type":"schema","topic":"registry"}}
+{"file":"screening-engine.md","date":"2026-05-18","status":"active","summary":"WATCH-001 screening engine reference — architecture, data layer, engine API, CLI subcommands, and /api/screenings routes","meta":{"type":"reference","topic":"screening","tags":["WATCH-001","screening","cli","api"]}}
 {"file":"tidy-first-philosophy.md","date":"2026-05-08","status":"active","summary":"Development philosophy: small steps, quality as constraint, no velocity pressure","meta":{"type":"philosophy","topic":"process"}}
 {"file":"time-benchmark-takeaways.md","date":"2026-05-15","status":"active","summary":"TIME benchmark key takeaways: TSFM rankings, pattern-level evaluation methodology (STL features), actionable for WATCH-001 screening enrichment","meta":{"topic":"tsfm","tags":["time-series","forecasting","benchmark","WATCH-001"]}}
 {"file":"workflow-patterns.md","date":"2026-05-08","status":"active","summary":"Common workflow patterns: trading plan, analysis review, price sync","meta":{"type":"reference","topic":"commands"}}
