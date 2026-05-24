@@ -1,5 +1,4 @@
 {"file":"15-brief-tidy-up.md","date":"2026-05-15","status":"active","summary":"(auto-generated — add description)","meta":{}}
-{"file":"2026-05-01-brief-bifrost-installation.md","date":"2026-05-14","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"2026-05-02-brief-portfolio-intelligence.md","date":"2026-05-02","status":"done","summary":"Portfolio Intelligence System: hledger cash + SQLite positions unified view","meta":{"epic":null}}
 {"file":"2026-05-07-brief-ascii-to-dot.md","date":"2026-05-07","status":"done","summary":"Replace ASCII diagrams with DOT + SVG/PNG via graphviz rendering pipeline","meta":{"epic":null}}
 {"file":"2026-05-08-brief-ctx-lexicon-upgrade.md","date":"2026-05-08","status":"done","summary":"CTX lexicon migrated: JSON array → JSONL, 161 entries, 7 terms incorporated into silo lexicon, 11 deprecated stubs removed","meta":{"epic":"UNIFIED-CLI-001"}}
