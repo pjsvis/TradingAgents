@@ -52,7 +52,7 @@ The workflow visualization (agent state, decision trails, SSE streams) is **defe
 
 Hono JSX does not support React hooks. Vanilla `FileTree` aligns with imperative Hono routes.
 
-```
+```text
 Server: prepareFileTreeInput() → preloadFileTree() → SSR markup
 Client: fileTree.hydrate({ fileTreeContainer }) → interactive tree
 ```
@@ -76,7 +76,7 @@ export function buildRepoTree(paths: string[]) {
 
 Right-click opens context menu. Selection triggers HTMX request for file content → renders in `#content` panel.
 
-```
+```text
 Tree selection → HTMX GET /explorer/file/:path → SSR markdown render → swap into #content
 ```
 
@@ -94,7 +94,7 @@ Tree selection → HTMX GET /explorer/file/:path → SSR markdown render → swa
 
 ## File structure
 
-```
+```text
 src/server/
 ├── lib/
 │   └── tree-prep.ts              # Prepared input builder
