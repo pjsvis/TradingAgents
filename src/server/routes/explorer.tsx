@@ -339,7 +339,7 @@ explorer.get("/file/*", (c) => {
 
   if (kind === "text") {
     if (ext === "json") {
-      return c.html(`<div class="file-view"><div class="file-header"><span class="file-path">${filePath}</span><button class="file-copy-btn" onclick="navigator.clipboard.writeText('${filePath.replace(/'/g, "\\'")}')">Copy Path</button></div><div class="file-content"><pre><code>${highlightCode(prettyPrintJson(content), "json")}</code></pre></div></div>`)
+      return c.html(`<div class="file-view"><div class="file-header"><span class="file-path">${filePath}</span><button class="file-copy-btn" onclick="navigator.clipboard.writeText('${filePath.replace(/'/g, "\\'")}')">Copy Path</button></div><div class="file-content"><pre><code>${prettyPrintJson(content)}</code></pre></div></div>`)
     }
     const lang = fileLanguageTag(filePath)
     return c.html(`<div class="file-view"><div class="file-header"><span class="file-path">${filePath}</span><button class="file-copy-btn" onclick="navigator.clipboard.writeText('${filePath.replace(/'/g, "\\'")}')">Copy Path</button></div><div class="file-content"><pre><code class="language-${lang}">${highlightCode(content, lang)}</code></pre></div></div>`)
