@@ -58,7 +58,10 @@ alias hl-prices := hledger::hl-prices
 alias hl-register := hledger::hl-register
 alias hl-net-worth := hledger::hl-net-worth
 
-# Type-check + lint + custom gates
+# Bundle client-side scripts (tree explorer, etc.)
+[group("bun")]
+build-client:
+    bun build --target=browser --format=esm --outfile=src/server/static/scripts/explorer-tree.bundle.js src/server/static/scripts/explorer-tree.ts# Type-check + lint + custom gates
 [group("bun")]
 check:
     just --unstable --fmt --check
@@ -551,6 +554,35 @@ regen-diagrams:
     bun scripts/render_diagrams.ts
     @echo ""
     @echo "Done. All diagrams regenerated in docs/diagrams/"
+
+# ── Prospect lists ──────────────────────────────────────────
+# docs/prospects/ — canonical source for all stock prospect lists.
+# Combined JSON feeds the Python tradingagents analysis pipeline.
+
+# Build combined-prospects.json from source documents
+[group("prospects")]
+prospects-build:
+    bun run scripts/prospects-build.ts
+
+# Validate prospect documents without writing output
+[group("prospects")]
+prospects-check:
+    bun run scripts/prospects-build.ts --check
+
+# Show prospect summary with jq
+[group("prospects")]
+prospects-list:
+    @echo "=== All Tickers ==="
+    jq -r '.tickers[] | "\(.ticker) \(.source) \(.sector) \(.priority)"' docs/prospects/combined-prospects.json
+    @echo ""
+    @echo "=== Unique Tickers ==="
+    jq -r '[.tickers[].ticker] | unique | .[]' docs/prospects/combined-prospects.json
+    @echo ""
+    @echo "=== By Sector ==="
+    jq -r '.tickers | group_by(.sector) | .[] | "\(.[0].sector): \(length)"' docs/prospects/combined-prospects.json
+    @echo ""
+    @echo "=== High Priority ==="
+    jq -r '.tickers[] | select(.priority=="high") | "  \(.ticker) — \(.name) — \(.thesis)"' docs/prospects/combined-prospects.json
 
 # ── PR review cache ─────────────────────────────────────────
 # Persist PR reviews as markdown in debriefs/reviews/ for offline review.
