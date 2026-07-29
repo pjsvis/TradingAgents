@@ -1,0 +1,1 @@
+1. **No imports from `server/` or `cli/` or `tradingagents/`.** Lab scripts are
