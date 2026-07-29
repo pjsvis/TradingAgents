@@ -22,6 +22,14 @@ interface RegistryDef {
   dirPath: string
   filePattern: RegExp
   exclude?: RegExp[]
+  /**
+   * Whether `listFiles` recurses into subdirectories. Default true.
+   * Set false for process folders (briefs, debriefs, decisions, playbooks)
+   * that must stay flat — archived content goes to .archive/<name>/, not
+   * nested subdirs. When false, a subdirectory in the folder is a hard
+   * error (active guardrail against mess re-accumulating).
+   */
+  recursive?: boolean
 }
 
 const REGISTRIES: Record<string, RegistryDef> = {
@@ -30,24 +38,28 @@ const REGISTRIES: Record<string, RegistryDef> = {
     dirPath: "briefs",
     filePattern: /\.md$/,
     exclude: [/INDEX\.jsonl/],
+    recursive: false,
   },
   debriefs: {
     indexPath: "debriefs/INDEX.jsonl",
     dirPath: "debriefs",
     filePattern: /\.md$/,
     exclude: [/INDEX\.jsonl/],
+    recursive: false,
   },
   decisions: {
     indexPath: "decisions/INDEX.jsonl",
     dirPath: "decisions",
     filePattern: /\.md$/,
     exclude: [/INDEX\.jsonl/],
+    recursive: false,
   },
   playbooks: {
     indexPath: "playbooks/REGISTRY.jsonl",
     dirPath: "playbooks",
     filePattern: /\.md$/,
     exclude: [/REGISTRY\.jsonl/, /README\.md/],
+    recursive: false,
   },
   docs: {
     indexPath: "docs/INDEX.jsonl",
@@ -80,13 +92,21 @@ function loadIndex(path: string): Array<{ file: string }> {
 }
 
 function listFiles(def: RegistryDef): string[] {
+  const recursive = def.recursive !== false // default true
   const results: string[] = []
+  const subdirs: string[] = []
 
   function walk(dir: string) {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const fullPath = join(dir, entry.name)
       if (entry.isDirectory()) {
-        walk(fullPath)
+        if (recursive) {
+          walk(fullPath)
+        } else {
+          // Active guardrail: process folders must stay flat.
+          // Archived content belongs in .archive/<name>/, not nested subdirs.
+          subdirs.push(relative(def.dirPath, fullPath))
+        }
       } else if (entry.isFile() && def.filePattern.test(entry.name)) {
         const relPath = relative(def.dirPath, fullPath)
         if (def.exclude?.some((re) => re.test(relPath))) continue
@@ -96,6 +116,14 @@ function listFiles(def: RegistryDef): string[] {
   }
 
   walk(def.dirPath)
+
+  if (subdirs.length > 0) {
+    throw new Error(
+      `${def.dirPath} must be flat (recursive=false) but contains subdirectories: ${subdirs.join(", ")}. ` +
+        `Move archived content to .archive/${def.dirPath}/ and remove the subdirs.`,
+    )
+  }
+
   return results.sort()
 }
 

@@ -55,7 +55,7 @@ justify it in one sentence, delete it.
 | `src/server/lib/` = server-only | NOT imported outside `src/server/` | 2026-05-07 |
 | PRs ≤ 30 files per concern | Reviewable, bisectable, merges fast; stack branches for dependencies | 2026-05-08 |
 | Pre-PR self-review checklist | 3-gate checklist (mechanical, semantic, docs) before opening PR; catches ~1 real bug per 3 bot flags | 2026-05-08 |
-| td ↔ current.md sync at startup | `td list` must match `debriefs/plans/current.md`; stale planning docs are process barnacles | 2026-05-08 |
+| td ↔ task list sync at startup | `td list`/`td status` is the live task source; stale planning docs are process barnacles | 2026-05-08 |
 | `scripts/` = support TS (loose) | Tooling, automation, not shipped | 2026-05-07 |
 | `scripts/lab/` = experiments | Loosest types; disposable | 2026-05-07 |
 | `scripts/lib/` = shared helpers | Reusable across scripts; pass `just check` | 2026-05-07 |
@@ -124,9 +124,9 @@ If it passes: add it to the Active Conventions table with its justification.
 ### Process barnacles
 After the doc scan, run these checks:
 
-1. `td list` → compare against `debriefs/plans/current.md`. Mismatches? Fix current.md.
+1. `td list`/`td status` → review open and in-review tasks. Stale? Close or reopen.
 2. `td list` → any tasks in `in_review` with merged PRs? Approve/close them.
-3. `debriefs/handoff-next-session.md` → still references a live branch? Still accurate?
+3. `debriefs/` flat folder → any stale handoff/session debriefs? Archive to `.archive/debriefs/`.
 4. `git branch` → any local branches for deleted/merged PRs? Delete them.
 ```
 

@@ -196,7 +196,7 @@ During implementation, you will make choices between alternatives. These decisio
 See `./decisions-playbook.md` for the full ADR format and process.
 
 ## Post-Debrief Checklist
-- [ ] **Archive Brief:** Move the completed brief from `briefs/` to `briefs/archive/` (or use date-prefix naming).
+- [ ] **Archive Brief:** Move the completed brief from `briefs/` to `.archive/briefs/`. Process folders stay flat — no nesting.
 - [ ] **Frontmatter Tags Present:** Verify debrief includes `date`, `tags`, `agent`, and `environment` fields.
 - [ ] **Write ADRs:** Any architectural decisions made during the session have corresponding ADRs in `decisions/`.
 - [ ] **Update Index:** `debriefs/INDEX.jsonl` entry added and linked to any ADRs via the `adr` field.

@@ -3,6 +3,7 @@
 {"file":"briefs-playbook.md","date":"2026-05-09","status":"canonical","summary":"Briefs Playbook","meta":{"source":"canonical","mining_candidate":false,"mining_note":null,"last_mined":null}}
 {"file":"ci-cd-playbook.md","date":"2026-05-08","status":"project","summary":"CI/CD pipeline: pre-push hooks, diagram auto-generation, just check gate","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
 {"file":"cli-design-playbook.md","date":"2026-05-08","status":"project","summary":"CLI design patterns: citty framework, argument definitions, output formatting","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
+{"file":"codegraph-playbook.md","date":"2026-06-24","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"conventions-playbook.md","date":"2026-05-08","status":"project","summary":"Active conventions, barnacle concept and detection, PR size discipline, inspection prompt","meta":{"source":null,"mining_candidate":true,"mining_note":"Barnacle concept (detecting and removing stale conventions) is highly portable","last_mined":"2026-05-09"}}
 {"file":"css-and-semantic-policy-playbook.md","date":"2026-05-31","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"database-lifecycle-playbook.md","date":"2026-05-08","status":"project","summary":"Database lifecycle: backup/restore, TEST vs LIVE mode switching, schema migration","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
@@ -23,6 +24,7 @@
 {"file":"lab-first-playbook.md","date":"2026-05-08","status":"project","summary":"Lab-first development: experiment in scripts/lab/, graduate proven patterns to production","meta":{"source":null,"mining_candidate":true,"mining_note":"Lab-first pattern (isolated experimentation → production graduation) is portable","last_mined":"2026-05-09"}}
 {"file":"mmdr-playbook.md","date":"2026-05-10","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"playbooks-playbook.md","date":"2026-05-10","status":"active","summary":"(auto-generated — add description)","meta":{}}
+{"file":"python-package-update-playbook.md","date":"2026-06-24","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"research-bridge-playbook.md","date":"2026-05-08","status":"active","summary":"(auto-generated — add description)","meta":{}}
 {"file":"search-playbook.md","date":"2026-05-11","status":"project","summary":"Code search conventions: rg primary, ag specialist (--ackmate/--search-zip/-p .ignore), GitNexus for semantic search","meta":{"source":null,"mining_candidate":false,"mining_note":null,"last_mined":null}}
 {"file":"services-playbook.md","date":"2026-05-08","status":"project","summary":"Server lifecycle management: PID files, log rotation, start/stop/status daemon pattern","meta":{"source":null,"mining_candidate":true,"mining_note":"PID-file lifecycle pattern is reusable; extract from TradingAgents server specifics","last_mined":"2026-05-09"}}
