@@ -15,12 +15,11 @@ Clears existing seeded data (keeps schema), then populates:
 """
 
 import argparse
-import json
 import os
 import sqlite3
-import sys
 from datetime import date, timedelta
 from pathlib import Path
+
 
 def resolve_db_path(explicit_path: str | None = None) -> Path:
     """Resolve target DB path.
@@ -506,7 +505,6 @@ def seed_post_mortems():
     POST_MORTEMS_DIR.mkdir(parents=True, exist_ok=True)
 
     for pm in post_mortems:
-        import yaml
         exit_date = pm.pop("exit_date")
         entry_price = pm.pop("entry_price")
         exit_price = pm.pop("exit_price")

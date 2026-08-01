@@ -1,6 +1,5 @@
 """Audit: all UI rendering must use GBP base currency symbol (£), not EUR (€)."""
 
-import re
 from pathlib import Path
 
 import pytest
@@ -63,7 +62,8 @@ class TestCurrencyConsistency:
     @pytest.mark.smoke
     def test_benchmark_endpoint_declares_base_currency(self):
         """Benchmark API response must include baseCurrency: GBP."""
-        import subprocess, json
+        import json
+        import subprocess
 
         result = subprocess.run(
             ["curl", "-s", "http://localhost:3000/api/benchmark"],
@@ -86,7 +86,8 @@ class TestCurrencyConsistency:
     @pytest.mark.smoke
     def test_governance_endpoint_declares_base_currency(self):
         """Governance API response must include baseCurrency field."""
-        import subprocess, json
+        import json
+        import subprocess
 
         result = subprocess.run(
             ["curl", "-s", "http://localhost:3000/api/governance"],
@@ -108,7 +109,8 @@ class TestCurrencyConsistency:
     @pytest.mark.smoke
     def test_portfolio_intelligence_returns_base_currency(self):
         """Portfolio intelligence must include GBP values."""
-        import subprocess, json
+        import json
+        import subprocess
 
         result = subprocess.run(
             ["curl", "-s", "http://localhost:3000/api/portfolio/intelligence"],

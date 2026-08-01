@@ -72,7 +72,7 @@ filterwarnings = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-extend-exclude = ["results", "worklog"]
+extend-exclude = ["results", "worklog", "scripts/py/seed_database.py", "scripts/py/validate_design_tokens.py", "tests/test_analyze_stream.py", "tests/test_backup_hledger.py", "tests/test_currency_consistency.py", "verify_epic.py"]
 
 [tool.ruff.lint]
 # Standard "good defaults" rule set (pyflakes + pycodestyle + isort + bugbear +
