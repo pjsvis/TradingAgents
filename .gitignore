@@ -277,3 +277,7 @@ src/server/static/scripts/explorer-tree.bundle.js
 
 # prospects-build — one-off script, pre-existing formatting issues block biome check
 scripts/prospects-build.ts
+
+# Enterprise env file (secrets) and generated run reports
+.env.enterprise
+reports/
