@@ -20,7 +20,6 @@ Edge cases:
 """
 import json
 import sys
-import traceback
 from typing import Any
 
 import numpy as np

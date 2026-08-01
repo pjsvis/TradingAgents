@@ -16,17 +16,17 @@ Events emitted:
 import argparse
 import datetime
 import json
-import os
 import signal
 import sys
 import threading
 import time
 import traceback
-from queue import Queue, Empty
+from queue import Empty, Queue
+
 from dotenv import load_dotenv
 
-from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.graph.trading_graph import TradingAgentsGraph
 
 # ── Global queues for threaded communication ─────────────────────────────────
 

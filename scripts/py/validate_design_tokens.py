@@ -25,7 +25,7 @@ class RGBA(NamedTuple):
     b: float
 
     @staticmethod
-    def from_hex(hex_color: str) -> "RGBA":
+    def from_hex(hex_color: str) -> RGBA:
         hex_color = hex_color.lstrip("#")
         if len(hex_color) != 6:
             raise ValueError(f"Invalid hex color: #{hex_color} (expected 6 chars)")

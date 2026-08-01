@@ -9,8 +9,8 @@ Currency semantics:
   - GBP ticker (.L):             currency = "GBP" → route uses directly
   - FX pair (GBPEUR=X):          returns GBP-per-unit, currency = "GBP"
 """
-import sys
 import json
+import sys
 
 try:
     import yfinance as yf
