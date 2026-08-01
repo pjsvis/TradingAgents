@@ -1,10 +1,10 @@
+import re
 from typing import Annotated
 
 from langchain_core.tools import tool
 
+from tradingagents.dataflows.defuddle import deep_fetch_batch
 from tradingagents.dataflows.interface import route_to_vendor
-from tradingagents.dataflows.defuddle import deep_fetch_article, deep_fetch_batch
-import re
 
 
 @tool

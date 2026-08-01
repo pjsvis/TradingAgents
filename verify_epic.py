@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Verify epic state: blog registry separation."""
-import json, os, subprocess
+import json
+import os
+import subprocess
 
 root = "/Users/petersmith/Dev/GitHub/TradingAgents"
 os.chdir(root)
@@ -20,7 +22,7 @@ blog = load_jsonl("docs/blog/INDEX.jsonl")
 print(f"docs/blog/INDEX.jsonl: {len(blog)} entries {'FAIL' if len(blog) != 2 else 'PASS'}")
 
 # 3. Blog files on disk match index
-blog_files = sorted([f.name for f in os.scandir("docs/blog") 
+blog_files = sorted([f.name for f in os.scandir("docs/blog")
                      if f.is_file() and f.name.endswith(".md") and f.name != "INDEX.jsonl"])
 indexed_blog = sorted([e["file"] for e in blog])
 print(f"Blog files on disk: {blog_files}")

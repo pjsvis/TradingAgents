@@ -177,7 +177,7 @@ class TestDataIntegrity:
         if phantom_platforms:
             print(f"\n[WARN] positions table has {len(phantom_platforms)} non-test "
                   f"platforms with no hledger backing: {set(phantom_platforms)}")
-            print(f"  Known debt — fix tracked in td-c5370e")
+            print("  Known debt — fix tracked in td-c5370e")
         # Soft fail: log the issue but pass. This test documents the known gap.
         # When td-c5370e is resolved, flip to assert == 0.
 

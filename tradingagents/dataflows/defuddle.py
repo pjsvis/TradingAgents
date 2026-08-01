@@ -8,17 +8,15 @@ full article text as clean Markdown from URLs. Requires the
     npm install -g defuddle
 """
 
-import subprocess
-import json
 import logging
-from typing import List, Optional
+import subprocess
 
 logger = logging.getLogger(__name__)
 
 DEFUDDLE_CMD = "defuddle"
 
 
-def _defuddle_binary() -> Optional[str]:
+def _defuddle_binary() -> str | None:
     """Check if defuddle CLI is available. Returns path or None."""
     try:
         result = subprocess.run(
@@ -80,7 +78,7 @@ def deep_fetch_article(url: str, timeout: int = 30) -> str:
 
 
 def deep_fetch_batch(
-    urls: List[str], max_articles: int = 5, timeout: int = 30
+    urls: list[str], max_articles: int = 5, timeout: int = 30
 ) -> str:
     """
     Fetch multiple URLs and return combined Markdown content.
