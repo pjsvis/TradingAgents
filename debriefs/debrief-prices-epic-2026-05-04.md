@@ -46,7 +46,7 @@ environment: local
 - `scripts/get_price.ts`: crypto ticker mapping (ETH→ETH-USD, BTC→BTC-USD) — bare tickers returned wrong price
 - `Justfile`: `sync-prices`, `sync-prices-all`, `sync-prices-ticker`, `seed-db-prices`
 - Rewrote `playbooks/briefs-playbook.md` (lean 10-line format; archived original)
-- Archived original TauricResearch README to `archive/upstream/tauric-readme.md`
+- Archived original TauricResearch README to `.archive/upstream/tauric-readme.md`
 - New fork README (`README.md`) with quick-start, architecture, key commands
 
 ### Problems

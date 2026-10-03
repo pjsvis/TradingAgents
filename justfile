@@ -236,7 +236,7 @@ wt-delete NAME:
 
 # ── Agent: Session orientation (minimal — replaces full agent-ceremony) ────────
 #   S08 brief: agent scripts archived. Use 'td --help' for task management.
-#   (agent-*.ts scripts moved to archive/)
+#   (agent-*.ts scripts moved to .archive/)
 
 # Orientation: branch, git status, last commit, in-flight tasks, and upstream PR status
 [group("agent")]
