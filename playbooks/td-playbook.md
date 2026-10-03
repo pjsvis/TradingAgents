@@ -1,7 +1,7 @@
 # TD Playbook — Solo Workflow
 
 > This playbook defines how to work on the TradingAgents project using `td` for task management.
-> For the archived multi-agent version, see `archive/playbooks/td-playbook.md`.
+> For the archived multi-agent version, see `.archive/playbooks/td-playbook.md`.
 
 ---
 
